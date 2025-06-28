@@ -134,7 +134,7 @@ body {
   animation-name: moveDown;
 }
 .carY-1 {
-  right: 48%;
+  right: 45%;
 }
 .carY-2 {
   right: 42%;
@@ -146,7 +146,7 @@ body {
   animation-name: moveUp;
 }
 .car-Y-1 {
-  left: 48%;
+  left: 45%;
 }
 .car-Y-2 {
   left: 42%;
@@ -159,7 +159,7 @@ body {
   animation-name: moveLeft;
 }
 .carX-1 {
-  bottom: 48%;
+  bottom: 45%;
 }
 .carX-2 {
   bottom: 42%;
@@ -173,7 +173,7 @@ body {
   animation-name: moveRight;
 }
 .car-X-1 {
-  top: 48%;
+  top: 45%;
 }
 .car-X-2 {
   top: 42%;

@@ -43,10 +43,11 @@ function weightedRandomChoice(items, weights) {
 
 
 function generateCar(axis, img, type) {
+    const containerAxisFactor = Math.floor(Math.random()*2+1);
     const carElement = document.createElement("img");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
-    carElement.classList.add("car"+axis+"-"+Math.floor(Math.random()*2+1));
+    carElement.classList.add("car"+axis+"-"+containerAxisFactor);
     carElement.src = "./img/"+img+".png";
 
     function monitorPosition() {
@@ -80,7 +81,7 @@ function generateCar(axis, img, type) {
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    document.getElementById("container"+axis).append(carElement);
+    document.getElementById("container"+axis+"-"+containerAxisFactor).append(carElement);
     counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
