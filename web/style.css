@@ -189,52 +189,57 @@ body {
   background-color: red;
   position: absolute;
 }
-.pedestriansY-up {
-  width: 350px;
-  height: 40px;
-  top: 250px;
-  left: 0;
+.pedestriansY-1 {
+  
+  height: 350px;
+  width: 40px;
+  left: 250px;
+  top: 0;
 }
-.pedestrians-Y-up {
-  width: 350px;
-  height: 40px;
-  top: 250px;
-  right: 0;
-}
-.pedestriansY-down {
-  width: 350px;
-  height: 40px;
-  bottom: 250px;
-  left: 0;
-}
-.pedestrians-Y-down {
-  width: 350px;
-  height: 40px;
-  bottom: 250px;
-  right: 0;
+.pedestrians-Y-1 {
+  
+  height: 350px;
+  width: 40px;
+  left: 250px;
+  bottom: 0;
 }
 
-.pedestriansX-left {
-  height: 350px;
-  width: 40px;
-  left: 250px;
-  top: 0;
-}
-.pedestrians-X-left {
-  height: 350px;
-  width: 40px;
-  left: 250px;
-  bottom: 0;
-}
-.pedestriansX-right {
+.pedestriansY-2 {
+  
   height: 350px;
   width: 40px;
   right: 250px;
   top: 0;
 }
-.pedestrians-X-right {
+.pedestrians-Y-2 {
+  
   height: 350px;
   width: 40px;
   right: 250px;
   bottom: 0;
+}
+
+.pedestriansX-1 {
+  width: 350px;
+  height: 40px;
+  top: 250px;
+  left: 0;
+}
+.pedestrians-X-1 {
+  width: 350px;
+  height: 40px;
+  bottom: 250px;
+  left: 0;
+}
+.pedestriansX-2 {
+  width: 350px;
+  height: 40px;
+  top: 250px;
+  right: 0;
+}
+.pedestrians-X-2 {
+  width: 350px;
+  height: 40px;
+  bottom: 250px;
+  right: 0;
 }

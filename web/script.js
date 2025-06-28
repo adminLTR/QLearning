@@ -55,7 +55,6 @@ function generateCar(axis, img, rail) {
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
         const posRatio = posValue / parentSize;
 
-        // Condición para eje en rojo
         const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
 
         let shouldPause = false;
@@ -67,8 +66,6 @@ function generateCar(axis, img, rail) {
                 siblingRatio = siblingValue / parentSize;
             }
 
-            // Solo se detiene si está muy cerca de la línea peatonal (zona crítica)
-            // o si está cerca del auto anterior (cola)
             if ((posRatio >= 0.32 && posRatio <= 0.34) ||
                 (posRatio > siblingRatio - 0.05 && posRatio < siblingRatio)) {
                 shouldPause = true;
