@@ -185,3 +185,56 @@ body {
   z-index: 10;
   position: absolute;
 }
+.pedestrians {
+  background-color: red;
+  position: absolute;
+}
+.pedestriansY-up {
+  width: 350px;
+  height: 40px;
+  top: 250px;
+  left: 0;
+}
+.pedestrians-Y-up {
+  width: 350px;
+  height: 40px;
+  top: 250px;
+  right: 0;
+}
+.pedestriansY-down {
+  width: 350px;
+  height: 40px;
+  bottom: 250px;
+  left: 0;
+}
+.pedestrians-Y-down {
+  width: 350px;
+  height: 40px;
+  bottom: 250px;
+  right: 0;
+}
+
+.pedestriansX-left {
+  height: 350px;
+  width: 40px;
+  left: 250px;
+  top: 0;
+}
+.pedestrians-X-left {
+  height: 350px;
+  width: 40px;
+  left: 250px;
+  bottom: 0;
+}
+.pedestriansX-right {
+  height: 350px;
+  width: 40px;
+  right: 250px;
+  top: 0;
+}
+.pedestrians-X-right {
+  height: 350px;
+  width: 40px;
+  right: 250px;
+  bottom: 0;
+}
