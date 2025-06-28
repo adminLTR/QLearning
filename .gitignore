@@ -1,0 +1,48 @@
+# Entorno virtual
+.venv/
+venv/
+ENV/
+env/
+
+qtable.json
+# Para evitar subir las API KEYS wiiiiii
+.env
+
+# Archivos Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de log y debug
+*.log
+
+# Archivos de configuración de VS Code
+.vscode/
+
+# Archivos temporales del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de bases de datos locales (si usas SQLite)
+*.sqlite3
+*.db
+
+# Archivos de testing
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+
+# Archivos de distribución
+build/
+dist/
+*.egg-info/
+
+# Archivos de Jupyter (por si acaso)
+.ipynb_checkpoints/
+
+# Caches de pip
+pip-wheel-metadata/
+__pypackages__/

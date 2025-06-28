@@ -1,0 +1,159 @@
+body {
+  margin: 0;
+  background-color: #2c2c2c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.intersection { 
+  position: relative;
+  width: 700px;
+  height: 700px;
+}
+
+/* Carreteras */
+.road {
+  position: absolute;
+  background-color: #444;
+  z-index: 1;
+}
+
+.horizontal {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 100px;
+}
+
+.vertical {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100%;
+}
+
+.vertical .crosswalk-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.vertical .crosswalk {
+    background-color: white;
+    width: 10px;
+    height: 40px;
+}
+.horizontal .crosswalk {
+    background-color: white;
+    height: 10px;
+    width: 40px;
+}
+.vertical #crosswalk-container-v-1 {
+    position: absolute;
+    top: 250px;
+}
+.vertical #crosswalk-container-v-2 {
+    position: absolute;
+    bottom: 250px;
+}
+
+.horizontal .crosswalk-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.horizontal #crosswalk-container-h-1 {
+    position: absolute;
+    left: 250px;
+}
+.horizontal #crosswalk-container-h-2 {
+    position: absolute;
+    right: 250px;
+}
+
+
+@keyframes moveDown {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 110%;
+    transform: translateY(-100%);
+  }
+}
+@keyframes moveUp {
+  0% {
+    bottom: -10%;
+  }
+  100% {
+    bottom: 110%;
+    transform: translateY(100%);
+  }
+}
+@keyframes moveLeft {
+  0% {
+    left: -10%;
+  }
+  100% {
+    left: 110%;
+    transform: translateX(100%);
+  }
+}
+@keyframes moveRight {
+  0% {
+    right: -10%;
+  }
+  100% {
+    right: 110%;
+    transform: translateX(-100%);
+  }
+}
+
+.car {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #1919fd;
+  z-index: 100;
+  position: absolute;
+  /* animation: moveDown 10s linear forwards; */
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.carY {
+  top: -10%;
+  right: 45%;
+  animation-name: moveDown;
+}
+.car-Y {
+  bottom: -10%;
+  left: 45%;
+  animation-name: moveUp;
+}
+.carX {
+  left: -10%;
+  bottom: 45%;
+  animation-name: moveLeft;
+}
+.car-X {
+  right: -10%;
+  top: 45%;
+  animation-name: moveRight;
+}
+
+
+.container {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  position: absolute;
+}
