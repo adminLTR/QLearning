@@ -25,8 +25,11 @@ const counters = {
     "X" : 0,
 }
 
-const arrayImg = ["car", "sc"];
-const weightsImg = [0.998, 0.002]
+const carArrayImg = ["car", "sc"];
+const carWeightsImg = [0.998, 0.002]
+
+const personArrayImg = ["person", "sp"];
+const personWeightsImg = [0.95, 0.05]
 
 function weightedRandomChoice(items, weights) {
     const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -42,12 +45,14 @@ function weightedRandomChoice(items, weights) {
 }
 
 
-function generateCar(axis, img, rail) {
+function generateCar(axis, img, type, rail) {
     const carElement = document.createElement("img");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
     carElement.classList.add("car"+axis+"-"+rail);
     carElement.src = "./img/"+img+".png";
+
+    const intervalLimits = !personArrayImg.includes(type) ? [0.32, 0.34] : [0, 0]
 
     function monitorPosition() {
         const pos = translator[axis][0];
@@ -98,14 +103,15 @@ function startTrafficFlow(axis, rail) {
         const randomDelay = Math.random() * 3000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        const randomType = weightedRandomChoice(arrayImg, weightsImg);
+        const randomType = weightedRandomChoice(carArrayImg, carWeightsImg);
+        const randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`
 
-        generateCar(axis, `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`, rail);
+        generateCar(axis, randomTypeImg, randomType, rail);
 
-        if (axis === "Y") timeOutIdYp = timeoutId; // guardar el timeout solo para eje Y
-        if (axis === "-Y") timeOutIdYn = timeoutId; // guardar el timeout solo para eje Y
-        if (axis === "X") timeOutIdXp = timeoutId; // guardar el timeout solo para eje Y
-        if (axis === "-X") timeOutIdXn = timeoutId; // guardar el timeout solo para eje Y
+        if (axis === "Y") timeOutIdYp = timeoutId;
+        if (axis === "-Y") timeOutIdYn = timeoutId;
+        if (axis === "X") timeOutIdXp = timeoutId;
+        if (axis === "-X") timeOutIdXn = timeoutId;
     }
     spawn();
 }
