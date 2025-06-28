@@ -46,6 +46,7 @@ function generateCar(axis, img, type) {
     const carElement = document.createElement("img");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
+    carElement.classList.add("car"+axis+"-"+Math.floor(Math.random()*2+1));
     carElement.src = "./img/"+img+".png";
 
     function monitorPosition() {

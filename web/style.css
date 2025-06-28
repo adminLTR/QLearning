@@ -131,27 +131,53 @@ body {
 
 .carY {
   top: -10%;
-  right: 45%;
   animation-name: moveDown;
 }
+.carY-1 {
+  right: 48%;
+}
+.carY-2 {
+  right: 42%;
+}
+
 .car-Y {
   bottom: -10%;
-  left: 45%;
+  /* left: 45%; */
   animation-name: moveUp;
 }
+.car-Y-1 {
+  left: 48%;
+}
+.car-Y-2 {
+  left: 42%;
+}
+
 .carX {
   left: -10%;
-  bottom: 45%;
+  /* bottom: 45%; */
   transform: rotateZ(90deg);
   animation-name: moveLeft;
 }
+.carX-1 {
+  bottom: 48%;
+}
+.carX-2 {
+  bottom: 42%;
+}
+
+
 .car-X {
   right: -10%;
   top: 45%;
   transform: rotateZ(90deg);
   animation-name: moveRight;
 }
-
+.car-X-1 {
+  top: 48%;
+}
+.car-X-2 {
+  top: 42%;
+}
 
 .container {
   width: 100%;
