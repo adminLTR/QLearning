@@ -42,12 +42,11 @@ function weightedRandomChoice(items, weights) {
 }
 
 
-function generateCar(axis, img, type) {
-    const containerAxisFactor = Math.floor(Math.random()*2+1);
+function generateCar(axis, img, rail) {
     const carElement = document.createElement("img");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
-    carElement.classList.add("car"+axis+"-"+containerAxisFactor);
+    carElement.classList.add("car"+axis+"-"+rail);
     carElement.src = "./img/"+img+".png";
 
     function monitorPosition() {
@@ -81,7 +80,7 @@ function generateCar(axis, img, type) {
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    document.getElementById("container"+axis+"-"+containerAxisFactor).append(carElement);
+    document.getElementById("container"+axis+"-"+rail).append(carElement);
     counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
@@ -97,14 +96,14 @@ document.addEventListener("click", () => {
     trafficEnabledY = !trafficEnabledY;
 });
 
-function startTrafficFlow(axis) {
+function startTrafficFlow(axis, rail) {
     function spawn() {
-        const randomDelay = Math.random() * 2000 + 1000;
+        const randomDelay = Math.random() * 3000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
         const randomType = weightedRandomChoice(arrayImg, weightsImg);
 
-        generateCar(axis, `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`, randomType);
+        generateCar(axis, `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`, rail);
 
         if (axis === "Y") timeOutIdYp = timeoutId; // guardar el timeout solo para eje Y
         if (axis === "-Y") timeOutIdYn = timeoutId; // guardar el timeout solo para eje Y
@@ -114,7 +113,11 @@ function startTrafficFlow(axis) {
     spawn();
 }
 
-startTrafficFlow("Y")
-startTrafficFlow("-Y")
-startTrafficFlow("X")
-startTrafficFlow("-X")
+startTrafficFlow("Y", 1)
+startTrafficFlow("Y", 2)
+startTrafficFlow("-Y", 1)
+startTrafficFlow("-Y", 2)
+startTrafficFlow("X", 1)
+startTrafficFlow("X", 2)
+startTrafficFlow("-X", 1)
+startTrafficFlow("-X", 2)
