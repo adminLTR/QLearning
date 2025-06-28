@@ -12,7 +12,20 @@ epsilon = 0.2  # exploración
 
 def get_state():
     """
-    Genera un estado aleatorio del entorno de tráfico
+    Returns a random state in a dict\n
+    Where 
+        ny: Number of cars in Y (North-South)
+        nx: Number of cars in X (East-West)
+        al: Actual light (X=0 or Y=1)
+        tw: Time cars are already waiting in red side
+        py: Number of pedestrians in Y (North-South)
+        px: Number of pedestrians in X (East-West)
+        epy: Number of special pedestrians in Y (North-South)
+        epx: Number of special pedestrians in X (East-West)
+        eny: Number of special cars in Y (North-South)
+        enx: Number of special cars in X (East-West)
+        dy: Distance of the nearest car to pedestrian line in Y (North-South)
+        dx: Distance of the nearest car to pedestrian line in X (East-West)
     """
     ny = random.randint(0, 5)
     nx = random.randint(0, 5)
@@ -30,7 +43,11 @@ def get_state():
 
 def choose_action(state):
     """
-    Elegir acción según política epsilon-greedy
+    Chooses an action depending on state in params\n
+    if random() < epsilon: (being epsilon a hyperparameter of QLearning)\n
+        returns a random action
+    else:
+        returns the best solution
     """
     if state not in Q:
         Q[state] = {a: 0.0 for a in actions}
