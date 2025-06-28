@@ -85,7 +85,7 @@ body {
   }
   100% {
     top: 110%;
-    transform: translateY(-100%);
+    /* transform: translateY(-100%); */
   }
 }
 @keyframes moveUp {
@@ -94,7 +94,7 @@ body {
   }
   100% {
     bottom: 110%;
-    transform: translateY(100%);
+    /* transform: translateY(100%); */
   }
 }
 @keyframes moveLeft {
@@ -103,7 +103,7 @@ body {
   }
   100% {
     left: 110%;
-    transform: translateX(100%);
+    /* transform: translateX(100%); */
   }
 }
 @keyframes moveRight {
@@ -112,21 +112,21 @@ body {
   }
   100% {
     right: 110%;
-    transform: translateX(-100%);
+    /* transform: translateX(-100%); */
   }
 }
 
 .car {
-  width: 15px;
-  height: 15px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background-color: #1919fd;
   z-index: 100;
   position: absolute;
   /* animation: moveDown 10s linear forwards; */
   animation-duration: 10s;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
+  display: block;
 }
 
 .carY {
@@ -142,11 +142,13 @@ body {
 .carX {
   left: -10%;
   bottom: 45%;
+  transform: rotateZ(90deg);
   animation-name: moveLeft;
 }
 .car-X {
   right: -10%;
   top: 45%;
+  transform: rotateZ(90deg);
   animation-name: moveRight;
 }
 

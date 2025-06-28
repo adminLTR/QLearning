@@ -6,6 +6,13 @@ let timeOutIdXn; //-X
 let timeOutIdYp; //Y
 let timeOutIdYn; //-Y
 
+const imgLen = {
+    car: 5,
+    person: 7,
+    sc: 3,
+    sp: 1,
+}
+
 const translator = {
     "Y" : ["top", "Height"],
     "-Y" : ["bottom", "Height"],
@@ -18,13 +25,28 @@ const counters = {
     "X" : 0,
 }
 
-function generateCar(axis = "Y") {
-    const carElement = document.createElement("div");
+const arrayImg = ["car", "sc"];
+const weightsImg = [0.998, 0.002]
+
+function weightedRandomChoice(items, weights) {
+    const totalWeight = weights.reduce((acc, w) => acc + w, 0);
+    const rand = Math.random() * totalWeight;
+    let cumulative = 0;
+
+    for (let i = 0; i < items.length; i++) {
+        cumulative += weights[i];
+        if (rand < cumulative) {
+            return items[i];
+        }
+    }
+}
+
+
+function generateCar(axis, img, type) {
+    const carElement = document.createElement("img");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
-
-    
-    
+    carElement.src = "./img/"+img+".png";
 
     function monitorPosition() {
         const pos = translator[axis][0];
@@ -47,7 +69,7 @@ function generateCar(axis = "Y") {
             // Solo se detiene si está muy cerca de la línea peatonal (zona crítica)
             // o si está cerca del auto anterior (cola)
             if ((posRatio >= 0.32 && posRatio <= 0.34) ||
-                (posRatio > siblingRatio - 0.025 && posRatio < siblingRatio)) {
+                (posRatio > siblingRatio - 0.05 && posRatio < siblingRatio)) {
                 shouldPause = true;
             }
         }
@@ -78,7 +100,9 @@ function startTrafficFlow(axis) {
         const randomDelay = Math.random() * 2000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        generateCar(axis);
+        const randomType = weightedRandomChoice(arrayImg, weightsImg);
+
+        generateCar(axis, `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`, randomType);
 
         if (axis === "Y") timeOutIdYp = timeoutId; // guardar el timeout solo para eje Y
         if (axis === "-Y") timeOutIdYn = timeoutId; // guardar el timeout solo para eje Y
