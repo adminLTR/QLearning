@@ -47,12 +47,13 @@ function weightedRandomChoice(items, weights) {
 
 function generateCar(axis, img, type, rail) {
     const carElement = document.createElement("img");
+    const intervalLimits = !personArrayImg.includes(type) ? [0.32, 0.34, true] : [0.34, 0.36, false]
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
     carElement.classList.add("car"+axis+"-"+rail);
+    
     carElement.src = "./img/"+img+".png";
 
-    const intervalLimits = !personArrayImg.includes(type) ? [0.32, 0.34] : [0, 0]
 
     function monitorPosition() {
         const pos = translator[axis][0];
@@ -71,7 +72,7 @@ function generateCar(axis, img, type, rail) {
                 siblingRatio = siblingValue / parentSize;
             }
 
-            if ((posRatio >= 0.32 && posRatio <= 0.34) ||
+            if ((posRatio >= intervalLimits[0] && posRatio <= intervalLimits[1]) ||
                 (posRatio > siblingRatio - 0.05 && posRatio < siblingRatio)) {
                 shouldPause = true;
             }
@@ -82,7 +83,12 @@ function generateCar(axis, img, type, rail) {
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    document.getElementById("container"+axis+"-"+rail).append(carElement);
+    if (!intervalLimits[2]) {
+        // is person
+        carElement.classList.add("person"+axis+"-"+rail);
+    } else {
+        document.getElementById("container"+axis+"-"+rail).append(carElement);
+    }
     counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
@@ -103,7 +109,7 @@ function startTrafficFlow(axis, rail) {
         const randomDelay = Math.random() * 3000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        const randomType = weightedRandomChoice(carArrayImg, carWeightsImg);
+        const randomType = weightedRandomChoice(carArrayImg.concat(personArrayImg), carWeightsImg.concat(personWeightsImg));
         const randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`
 
         generateCar(axis, randomTypeImg, randomType, rail);

@@ -122,7 +122,6 @@ body {
   border-radius: 50%;
   z-index: 100;
   position: absolute;
-  /* animation: moveDown 10s linear forwards; */
   animation-duration: 10s;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
@@ -242,4 +241,9 @@ body {
   height: 40px;
   bottom: 250px;
   right: 0;
+}
+
+.personY-1 {
+  animation-name: moveDown;
+  
 }
