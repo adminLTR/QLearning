@@ -13,17 +13,17 @@ gamma = 0.9     # discount factor
 epsilon = 0.5   # exploración
 
 def get_state():
-    ny = random.randint(0, 3)
-    nx = random.randint(0, 3)
-    al = random.randint(0, 1)
+    ny = random.randint(0, 3) # 
+    nx = random.randint(0, 3) #
+    al = random.randint(0, 1) #
     tw = random.randint(0, 3)
-    py = random.randint(0, 3)
-    px = random.randint(0, 3)
-    epy = random.randint(0, 1)
-    epx = random.randint(0, 1)
-    eny = random.randint(0, 1)
-    enx = random.randint(0, 1)
-    dy = random.randint(0, 3)
+    py = random.randint(0, 3) #
+    px = random.randint(0, 3) #
+    epy = random.randint(0, 1) # 
+    epx = random.randint(0, 1) #
+    eny = random.randint(0, 1) #
+    enx = random.randint(0, 1) #
+    dy = random.randint(0, 3) 
     dx = random.randint(0, 3)
     return f"{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"
 

@@ -4,7 +4,8 @@ venv/
 ENV/
 env/
 
-*.json
+qtable.json
+qtable.js
 # Para evitar subir las API KEYS wiiiiii
 .env
 

@@ -2,17 +2,16 @@ const state = {
     nx: 0,
     ny: 0,
     al: 0,
-    tw: 0,
+    tw: 2,
     py: 0,
     px: 0,
     epy: 0,
     epx: 0,
     eny: 0,
     enx: 0,
-    dy: 0,
-    dx: 0,
+    dy: 1,
+    dx: 1,
 }
-
 
 let trafficEnabledY = false;
 let trafficEnabledX = true;
@@ -145,6 +144,7 @@ document.addEventListener("click", () => {
     setTimeout(() => {
         trafficEnabledX = newTrafficEnabledX;
         trafficEnabledY = newTrafficEnabledY;
+        state.al = trafficEnabledY ? 1 : 0;
         isAmbar = false;
     }, 3000); 
 });
