@@ -23,6 +23,8 @@ let timeOutIdXn; //-X
 let timeOutIdYp; //Y
 let timeOutIdYn; //-Y
 
+let betterAction;
+
 const imgLen = {
     car: 5,
     person: 7,
@@ -42,6 +44,26 @@ const carWeightsImg = [0.95, 0.05]
 
 const personArrayImg = ["person", "sp"];
 const personWeightsImg = [0.95, 0.05]
+
+function getBetterAction(state) {
+  if (!(state in QTABLE)) {
+    console.log(`Estado '${state}' no encontrado en la Q-table.`);
+    return null;
+  }
+
+  const acciones = QTABLE[state];
+  let mejorAccion = null;
+  let mejorValor = -Infinity;
+
+  for (const accion in acciones) {
+    if (acciones[accion] > mejorValor) {
+      mejorValor = acciones[accion];
+      mejorAccion = accion;
+    }
+  }
+  console.log(state)
+  return mejorAccion;
+}
 
 function weightedRandomChoice(items, weights) {
     const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -176,20 +198,70 @@ function startTrafficFlow(axis, rail, people=false) {
     spawn();
 }
 
-startTrafficFlow("Y", 1)
-startTrafficFlow("Y", 2)
-startTrafficFlow("-Y", 1)
-startTrafficFlow("-Y", 2)
-startTrafficFlow("X", 1)
-startTrafficFlow("X", 2)
-startTrafficFlow("-X", 1)
-startTrafficFlow("-X", 2)
+function normalizeNumberCars(n) {
+    if (n === 0) { return n; }
+    if (n < 8) { return 1; }
+    if (n < 16) { return 2; }
+    return 3;
+}
 
-startTrafficFlow("Y", 1, true)
-startTrafficFlow("Y", 2, true)
-startTrafficFlow("-Y", 1, true)
-startTrafficFlow("-Y", 2, true)
-startTrafficFlow("X", 1, true)
-startTrafficFlow("X", 2, true)
-startTrafficFlow("-X", 1, true)
-startTrafficFlow("-X", 2, true)
+
+startTrafficFlow("Y", 1);
+startTrafficFlow("Y", 2);
+startTrafficFlow("-Y", 1);
+startTrafficFlow("-Y", 2);
+startTrafficFlow("X", 1);
+startTrafficFlow("X", 2);
+startTrafficFlow("-X", 1);
+startTrafficFlow("-X", 2);
+
+startTrafficFlow("Y", 1, true);
+startTrafficFlow("Y", 2, true);
+startTrafficFlow("-Y", 1, true);
+startTrafficFlow("-Y", 2, true);
+startTrafficFlow("X", 1, true);
+startTrafficFlow("X", 2, true);
+startTrafficFlow("-X", 1, true);
+startTrafficFlow("-X", 2, true);
+
+setInterval(() => {
+    let { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx, } = state;
+    nx = normalizeNumberCars(nx);
+    ny = normalizeNumberCars(ny);
+    px = normalizeNumberCars(px);
+    py = normalizeNumberCars(py);
+    const lastBetterAction = betterAction;
+    betterAction = getBetterAction(`${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`);
+    if (lastBetterAction === betterAction) {
+        return
+    }
+    if (betterAction) {
+        if (betterAction === "green_EW") {
+            if (isAmbar) return;
+
+            trafficEnabledX = false;
+            trafficEnabledY = false;
+            isAmbar = true;
+
+            setTimeout(() => {
+                trafficEnabledX = true;
+                trafficEnabledY = false;
+                state.al = trafficEnabledY ? 1 : 0;
+                isAmbar = false;
+            }, 3000); 
+        } else if (betterAction === "green_NS") {
+            if (isAmbar) return;
+
+            trafficEnabledX = false;
+            trafficEnabledY = false;
+            isAmbar = true;
+
+            setTimeout(() => {
+                trafficEnabledX = false;
+                trafficEnabledY = true;
+                state.al = trafficEnabledY ? 1 : 0;
+                isAmbar = false;
+            }, 3000); 
+        }
+    }
+}, 500);
