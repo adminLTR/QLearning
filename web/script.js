@@ -28,10 +28,10 @@ const counters = {
 }
 
 const carArrayImg = ["car", "sc"];
-const carWeightsImg = [0.495, 0.0025]
+const carWeightsImg = [0.95, 0.05]
 
 const personArrayImg = ["person", "sp"];
-const personWeightsImg = [0.495, 0.0025]
+const personWeightsImg = [0.95, 0.05]
 
 function weightedRandomChoice(items, weights) {
     const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -121,13 +121,22 @@ document.addEventListener("click", () => {
     }, 3000); 
 });
 
-function startTrafficFlow(axis, rail) {
+function startTrafficFlow(axis, rail, people=false) {
     function spawn() {
-        const randomDelay = Math.random() * 3000 + 1000;
-        const timeoutId = setTimeout(spawn, randomDelay);
-
-        const randomType = weightedRandomChoice([...carArrayImg, ...personArrayImg], [...carWeightsImg, ...personWeightsImg]);
-        const randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`
+        let randomDelay, timeoutId, randomType, randomTypeImg;
+        if (people) {
+            randomDelay = Math.random() * 15000 + 6000;
+            timeoutId = setTimeout(spawn, randomDelay);
+    
+            randomType = weightedRandomChoice([...personArrayImg], [...personWeightsImg]);
+            randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`            
+        } else {
+            randomDelay = Math.random() * 5000 + 2000;
+            timeoutId = setTimeout(spawn, randomDelay);
+    
+            randomType = weightedRandomChoice([...carArrayImg], [...carWeightsImg]);
+            randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`
+        }
 
         generateCar(axis, randomTypeImg, randomType, rail);
 
@@ -147,3 +156,12 @@ startTrafficFlow("X", 1)
 startTrafficFlow("X", 2)
 startTrafficFlow("-X", 1)
 startTrafficFlow("-X", 2)
+
+startTrafficFlow("Y", 1, true)
+startTrafficFlow("Y", 2, true)
+startTrafficFlow("-Y", 1, true)
+startTrafficFlow("-Y", 2, true)
+startTrafficFlow("X", 1, true)
+startTrafficFlow("X", 2, true)
+startTrafficFlow("-X", 1, true)
+startTrafficFlow("-X", 2, true)
