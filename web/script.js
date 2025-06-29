@@ -1,6 +1,8 @@
 let trafficEnabledY = false;
 let trafficEnabledX = true;
 
+let isAmbar = false;
+
 let timeOutIdXp; //X
 let timeOutIdXn; //-X
 let timeOutIdYp; //Y
@@ -103,8 +105,20 @@ function generateCar(axis, img, type, rail) {
 
 
 document.addEventListener("click", () => {
-    trafficEnabledX = !trafficEnabledX;
-    trafficEnabledY = !trafficEnabledY;
+    if (isAmbar) return;
+
+    let newTrafficEnabledX = !trafficEnabledX;
+    let newTrafficEnabledY = !trafficEnabledY;
+
+    trafficEnabledX = false;
+    trafficEnabledY = false;
+    isAmbar = true;
+
+    setTimeout(() => {
+        trafficEnabledX = newTrafficEnabledX;
+        trafficEnabledY = newTrafficEnabledY;
+        isAmbar = false;
+    }, 3000); 
 });
 
 function startTrafficFlow(axis, rail) {

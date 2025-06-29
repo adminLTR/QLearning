@@ -189,6 +189,7 @@ body {
   width: 25px;
   height: 25px;
   position: absolute;
+  animation-duration: 25s;
 }
 
 .personY-1 {
