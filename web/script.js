@@ -1,3 +1,19 @@
+const state = {
+    nx: 0,
+    ny: 0,
+    al: 0,
+    tw: 0,
+    py: 0,
+    px: 0,
+    epy: 0,
+    epx: 0,
+    eny: 0,
+    enx: 0,
+    dy: 0,
+    dx: 0,
+}
+
+
 let trafficEnabledY = false;
 let trafficEnabledX = true;
 
@@ -20,11 +36,6 @@ const translator = {
     "-Y" : ["bottom", "Height"],
     "X" : ["left", "Width"],
     "-X" : ["right", "Width"],
-}
-
-const counters = {
-    "Y" : 0,
-    "X" : 0,
 }
 
 const carArrayImg = ["car", "sc"];
@@ -85,20 +96,37 @@ function generateCar(axis, img, type, rail) {
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    if (!intervalLimits[2]) {
-        // is person
+    const axisLower = axis.at(axis.length-1).toLowerCase();
+
+    if (!intervalLimits[2]) { // is person        
         carElement.classList.add("person"+axis+"-"+rail);
         carElement.classList.add("person");
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
-    } else {
-        
+        state["p"+axisLower]++;
+        if (type === "sp") {
+            state["ep"+axisLower] = 1;
+        }
+    } else {        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
+        state["n"+axisLower]++;
+        if (type === "sc") {
+            state["en"+axisLower] = 1;
+        }
     }
-    counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
         carElement.remove();
-        counters[axis[axis.length-1]]--;
+        if (!intervalLimits[2]) {
+            state["p"+axisLower]--;
+            if (type === "sp") {
+                state["ep"+axisLower] = 0;
+            }
+        } else {
+            state["n"+axisLower]--;
+            if (type === "sc") {
+                state["en"+axisLower] = 0;
+            }
+        }
     });
     requestAnimationFrame(monitorPosition);
 }
