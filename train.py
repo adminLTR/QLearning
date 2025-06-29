@@ -10,7 +10,7 @@ Q = {}
 # Hiperparámetros
 alpha = 0.1     # learning rate
 gamma = 0.9     # discount factor
-epsilon = 0.2   # exploración
+epsilon = 0.5   # exploración
 
 def get_state():
     ny = random.randint(0, 3)
@@ -114,9 +114,6 @@ def train(episodes=10000, autosave_interval=1000000):
 
         unique_states.add(state)
 
-        if episode % autosave_interval == 0:
-            save_q_table(f"qtable_checkpoint_{episode}.json")
-
     elapsed = time.time() - start_time
     print(f"\n✅ Entrenamiento completo en {elapsed:.2f} segundos.")
     print(f"📊 Estados únicos visitados: {len(unique_states)} de ~2,097,152 posibles.")
@@ -124,10 +121,10 @@ def train(episodes=10000, autosave_interval=1000000):
     save_q_table()
 
 # Ejecutar entrenamiento
-train(7000000)
+train(25000000)
 
 # Consulta de ejemplo
-ejemplo = "3_2_1_4_1_1_0_0_0_0_2_1"
+ejemplo = "2_0_0_0_0_2_0_0_0_1_3_3"
 mejor_accion = obtener_mejor_accion(ejemplo)
 if mejor_accion:
     print(f"Mejor acción para el estado {ejemplo}: {mejor_accion}")
