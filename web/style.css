@@ -116,7 +116,7 @@ body {
   }
 }
 
-.car {
+.car, .person {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -184,66 +184,35 @@ body {
   z-index: 10;
   position: absolute;
 }
-.pedestrians {
-  background-color: red;
+
+.person {
+  width: 25px;
+  height: 25px;
   position: absolute;
-}
-.pedestriansY-1 {
-  
-  height: 350px;
-  width: 40px;
-  left: 250px;
-  top: 0;
-}
-.pedestrians-Y-1 {
-  
-  height: 350px;
-  width: 40px;
-  left: 250px;
-  bottom: 0;
-}
-
-.pedestriansY-2 {
-  
-  height: 350px;
-  width: 40px;
-  right: 250px;
-  top: 0;
-}
-.pedestrians-Y-2 {
-  
-  height: 350px;
-  width: 40px;
-  right: 250px;
-  bottom: 0;
-}
-
-.pedestriansX-1 {
-  width: 350px;
-  height: 40px;
-  top: 250px;
-  left: 0;
-}
-.pedestrians-X-1 {
-  width: 350px;
-  height: 40px;
-  bottom: 250px;
-  left: 0;
-}
-.pedestriansX-2 {
-  width: 350px;
-  height: 40px;
-  top: 250px;
-  right: 0;
-}
-.pedestrians-X-2 {
-  width: 350px;
-  height: 40px;
-  bottom: 250px;
-  right: 0;
 }
 
 .personY-1 {
-  animation-name: moveDown;
-  
+  right: 39%;
+}
+.personY-2 {
+  left: 39%;
+}
+.person-Y-1 {
+  left: 62%;
+}
+.person-Y-2 {
+  left: 36%;
+}
+
+.personX-1 {
+  top: 39%;
+}
+.personX-2 {
+  bottom: 39%;
+}
+.person-X-1 {
+  top: 62%;
+}
+.person-X-2 {
+  top: 36%;
 }

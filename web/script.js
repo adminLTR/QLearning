@@ -26,10 +26,10 @@ const counters = {
 }
 
 const carArrayImg = ["car", "sc"];
-const carWeightsImg = [0.998, 0.002]
+const carWeightsImg = [0.495, 0.0025]
 
 const personArrayImg = ["person", "sp"];
-const personWeightsImg = [0.95, 0.05]
+const personWeightsImg = [0.495, 0.0025]
 
 function weightedRandomChoice(items, weights) {
     const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -47,11 +47,11 @@ function weightedRandomChoice(items, weights) {
 
 function generateCar(axis, img, type, rail) {
     const carElement = document.createElement("img");
-    const intervalLimits = !personArrayImg.includes(type) ? [0.32, 0.34, true] : [0.34, 0.36, false]
+    const intervalLimits = !personArrayImg.includes(type) ? [0.31, 0.33, true] : [0.36, 0.38, false]
+    
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
     carElement.classList.add("car"+axis+"-"+rail);
-    
     carElement.src = "./img/"+img+".png";
 
 
@@ -86,7 +86,10 @@ function generateCar(axis, img, type, rail) {
     if (!intervalLimits[2]) {
         // is person
         carElement.classList.add("person"+axis+"-"+rail);
+        carElement.classList.add("person");
+        document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
     } else {
+        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
     }
     counters[axis[axis.length-1]]++;
@@ -109,7 +112,7 @@ function startTrafficFlow(axis, rail) {
         const randomDelay = Math.random() * 3000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        const randomType = weightedRandomChoice(carArrayImg.concat(personArrayImg), carWeightsImg.concat(personWeightsImg));
+        const randomType = weightedRandomChoice([...carArrayImg, ...personArrayImg], [...carWeightsImg, ...personWeightsImg]);
         const randomTypeImg = `${randomType}-${Math.floor(Math.random()*imgLen[randomType])+1}`
 
         generateCar(axis, randomTypeImg, randomType, rail);
