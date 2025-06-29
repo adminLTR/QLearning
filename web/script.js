@@ -45,13 +45,13 @@ const carWeightsImg = [0.95, 0.05]
 const personArrayImg = ["person", "sp"];
 const personWeightsImg = [0.95, 0.05]
 
-function getBetterAction(state) {
-  if (!(state in QTABLE)) {
-    console.log(`Estado '${state}' no encontrado en la Q-table.`);
+function getBetterAction(stateString) {
+  if (!(stateString in QTABLE)) {
+    console.log(`Estado '${stateString}' no encontrado en la Q-table.`);
     return null;
   }
 
-  const acciones = QTABLE[state];
+  const acciones = QTABLE[stateString];
   let mejorAccion = null;
   let mejorValor = -Infinity;
 
@@ -62,6 +62,7 @@ function getBetterAction(state) {
     }
   }
   console.log(state)
+  console.log(stateString)
   return mejorAccion;
 }
 
@@ -80,6 +81,7 @@ function weightedRandomChoice(items, weights) {
 
 
 function generateCar(axis, img, type, rail) {
+    const axisLower = axis.at(axis.length-1).toLowerCase();
     const carElement = document.createElement("img");
     const intervalLimits = !personArrayImg.includes(type) ? [0.31, 0.33, true] : [0.36, 0.38, false]
     
@@ -90,6 +92,7 @@ function generateCar(axis, img, type, rail) {
 
 
     function monitorPosition() {
+        if (!carElement.isConnected) return;
         const pos = translator[axis][0];
         const posValue = parseFloat(getComputedStyle(carElement)[pos]);
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
@@ -98,6 +101,8 @@ function generateCar(axis, img, type, rail) {
         const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
 
         let shouldPause = false;
+
+        
 
         if (isRed) {
             let siblingRatio = -Infinity;
@@ -111,13 +116,24 @@ function generateCar(axis, img, type, rail) {
                 shouldPause = true;
             }
         }
+        carElement.style.animationPlayState = shouldPause?"pause":"running";
 
-        carElement.style.animationPlayState = shouldPause ? "paused" : "running";
+        if (posRatio > intervalLimits[1]) {
+            if (!intervalLimits[2]) {
+                state["p"+axisLower]--;
+                if (type === "sp") {
+                    state["ep"+axisLower]--;
+                }
+            } else {
+                state["n"+axisLower]--;
+                if (type === "sc") {
+                    state["en"+axisLower]--;
+                }
+            }
+        }
 
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
-
-    const axisLower = axis.at(axis.length-1).toLowerCase();
 
     if (!intervalLimits[2]) { // is person        
         carElement.classList.add("person"+axis+"-"+rail);
@@ -125,29 +141,18 @@ function generateCar(axis, img, type, rail) {
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
         state["p"+axisLower]++;
         if (type === "sp") {
-            state["ep"+axisLower] = 1;
+            state["ep"+axisLower]++;
         }
     } else {        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
         state["n"+axisLower]++;
         if (type === "sc") {
-            state["en"+axisLower] = 1;
+            state["en"+axisLower]++;
         }
     }
     
     carElement.addEventListener("animationend", () => {
-        carElement.remove();
-        if (!intervalLimits[2]) {
-            state["p"+axisLower]--;
-            if (type === "sp") {
-                state["ep"+axisLower] = 0;
-            }
-        } else {
-            state["n"+axisLower]--;
-            if (type === "sc") {
-                state["en"+axisLower] = 0;
-            }
-        }
+        carElement.remove();        
     });
     requestAnimationFrame(monitorPosition);
 }
@@ -199,7 +204,7 @@ function startTrafficFlow(axis, rail, people=false) {
 }
 
 function normalizeNumberCars(n) {
-    if (n === 0) { return n; }
+    if (n <= 0) { return 0; }
     if (n < 8) { return 1; }
     if (n < 16) { return 2; }
     return 3;
@@ -230,6 +235,10 @@ setInterval(() => {
     ny = normalizeNumberCars(ny);
     px = normalizeNumberCars(px);
     py = normalizeNumberCars(py);
+    epy = epy > 0 ? 1 : 0;
+    epx = epx > 0 ? 1 : 0;
+    eny = eny > 0 ? 1 : 0;
+    enx = enx > 0 ? 1 : 0;
     const lastBetterAction = betterAction;
     betterAction = getBetterAction(`${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`);
     if (lastBetterAction === betterAction) {
@@ -264,4 +273,4 @@ setInterval(() => {
             }, 3000); 
         }
     }
-}, 500);
+}, 1000);

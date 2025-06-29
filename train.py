@@ -95,11 +95,7 @@ def save_q_table(filename="qtable.json"):
     with open(filename, "w") as f:
         json.dump(Q, f, indent=2)
 
-def obtener_mejor_accion(state):
-    if state not in Q:
-        print(f"Estado '{state}' no encontrado en la Q-table.")
-        return None
-    return max(Q[state], key=Q[state].get)
+  
 
 def train(episodes=10000, autosave_interval=1000000):
     unique_states = set()
