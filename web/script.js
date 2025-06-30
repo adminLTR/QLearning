@@ -61,8 +61,7 @@ function getBetterAction(stateString) {
       mejorAccion = accion;
     }
   }
-  console.log(state)
-  console.log(stateString)
+  console.log(mejorAccion)
   return mejorAccion;
 }
 
@@ -90,6 +89,8 @@ function generateCar(axis, img, type, rail) {
     carElement.classList.add("car"+axis+"-"+rail);
     carElement.src = "./img/"+img+".png";
 
+    // let hasPassedCrossLine = false;
+
 
     function monitorPosition() {
         if (!carElement.isConnected) return;
@@ -98,11 +99,14 @@ function generateCar(axis, img, type, rail) {
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
         const posRatio = posValue / parentSize;
 
-        const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
-
+        let isRed = false;
+        if (axis === "Y" || axis === "-Y") {
+            isRed = !trafficEnabledY;
+        } else if (axis === "X" || axis === "-X") {
+            isRed = !trafficEnabledX;
+        }
         let shouldPause = false;
 
-        
 
         if (isRed) {
             let siblingRatio = -Infinity;
@@ -117,20 +121,22 @@ function generateCar(axis, img, type, rail) {
             }
         }
         carElement.style.animationPlayState = shouldPause?"pause":"running";
+        console.log(carElement.style.animationPlayState)
+        // hasPassedCrossLine = posRatio > intervalLimits[1];
 
-        if (posRatio > intervalLimits[1]) {
-            if (!intervalLimits[2]) {
-                state["p"+axisLower]--;
-                if (type === "sp") {
-                    state["ep"+axisLower]--;
-                }
-            } else {
-                state["n"+axisLower]--;
-                if (type === "sc") {
-                    state["en"+axisLower]--;
-                }
-            }
-        }
+        // if (hasPassedCrossLine) {
+        //     if (!intervalLimits[2]) {
+        //         state["p"+axisLower]--;
+        //         if (type === "sp") {
+        //             state["ep"+axisLower]--;
+        //         }
+        //     } else {
+        //         state["n"+axisLower]--;
+        //         if (type === "sc") {
+        //             state["en"+axisLower]--;
+        //         }
+        //     }
+        // }
 
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
@@ -139,16 +145,16 @@ function generateCar(axis, img, type, rail) {
         carElement.classList.add("person"+axis+"-"+rail);
         carElement.classList.add("person");
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
-        state["p"+axisLower]++;
-        if (type === "sp") {
-            state["ep"+axisLower]++;
-        }
+        // state["p"+axisLower]++;
+        // if (type === "sp") {
+        //     state["ep"+axisLower]++;
+        // }
     } else {        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
-        state["n"+axisLower]++;
-        if (type === "sc") {
-            state["en"+axisLower]++;
-        }
+        // state["n"+axisLower]++;
+        // if (type === "sc") {
+        //     state["en"+axisLower]++;
+        // }
     }
     
     carElement.addEventListener("animationend", () => {
@@ -158,23 +164,23 @@ function generateCar(axis, img, type, rail) {
 }
 
 
-document.addEventListener("click", () => {
-    if (isAmbar) return;
+// document.addEventListener("click", () => {
+//     if (isAmbar) return;
 
-    let newTrafficEnabledX = !trafficEnabledX;
-    let newTrafficEnabledY = !trafficEnabledY;
+//     let newTrafficEnabledX = !trafficEnabledX;
+//     let newTrafficEnabledY = !trafficEnabledY;
 
-    trafficEnabledX = false;
-    trafficEnabledY = false;
-    isAmbar = true;
+//     trafficEnabledX = false;
+//     trafficEnabledY = false;
+//     isAmbar = true;
 
-    setTimeout(() => {
-        trafficEnabledX = newTrafficEnabledX;
-        trafficEnabledY = newTrafficEnabledY;
-        state.al = trafficEnabledY ? 1 : 0;
-        isAmbar = false;
-    }, 3000); 
-});
+//     setTimeout(() => {
+//         trafficEnabledX = newTrafficEnabledX;
+//         trafficEnabledY = newTrafficEnabledY;
+//         state.al = trafficEnabledY ? 1 : 0;
+//         isAmbar = false;
+//     }, 3000); 
+// });
 
 function startTrafficFlow(axis, rail, people=false) {
     function spawn() {
@@ -209,7 +215,84 @@ function normalizeNumberCars(n) {
     if (n < 16) { return 2; }
     return 3;
 }
+function normalizeDistance(n) {
+    if (n <= 0) { return 0; }
+    if (n < 0.25) { return 1; }
+    if (n < 16) { return 2; }
+    return 3;
+}
 
+function updateTrafficStateFromDOM() {
+  const axisMap = {
+    "Y": ["top", "clientHeight"],
+    "-Y": ["bottom", "clientHeight"],
+    "X": ["left", "clientWidth"],
+    "-X": ["right", "clientWidth"]
+  };
+
+  // Inicializar contadores
+  const counts = {
+    nx: 0,
+    ny: 0,
+    px: 0,
+    py: 0,
+    epx: 0,
+    epy: 0,
+    enx: 0,
+    eny: 0,
+    dx: 1,
+    dy: 1,
+  };
+
+  const updateAxis = (axis, type, isPerson) => {
+    const className = isPerson ? `.person${axis}` : `.car${axis}`;
+    const elements = document.querySelectorAll(className);
+    const [posProp, sizeProp] = axisMap[axis];
+
+    let minDistance = Infinity;
+    elements.forEach(el => {
+      const parentSize = el.parentElement[sizeProp];
+      const pos = parseFloat(getComputedStyle(el)[posProp]);
+      const ratio = pos / parentSize;
+
+      const isBeforeCross =
+        (axis === "Y" || axis === "-Y") ? (ratio <= 0.34) : (ratio <= 0.34);
+      if (isBeforeCross) {
+        if (isPerson) {
+          counts[`p${axis.at(-1).toLowerCase()}`]++;
+          if (el.src.includes("sp")) counts[`ep${axis.at(-1).toLowerCase()}`]++;
+        } else {
+          counts[`n${axis.at(-1).toLowerCase()}`]++;
+          if (el.src.includes("sc")) counts[`en${axis.at(-1).toLowerCase()}`]++;
+        }
+        if (ratio < minDistance) {
+          minDistance = ratio;
+        }
+      }
+    });
+    if (!isPerson) {
+      const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
+    //   counts[distProp] = 1 - minDistance; // normalizamos distancia
+    }
+  };
+
+  ["Y", "-Y", "X", "-X"].forEach(axis => {
+    updateAxis(axis, "car", false);
+    updateAxis(axis, "person", true);
+  });
+
+  // Asignar al estado principal
+  state.ny = normalizeNumberCars(counts.ny);
+  state.nx = normalizeNumberCars(counts.nx);
+  state.py = normalizeNumberCars(counts.py);
+  state.px = normalizeNumberCars(counts.px);
+  state.epy = counts.epy > 0 ? 1 : 0;
+  state.epx = counts.epx > 0 ? 1 : 0;
+  state.eny = counts.eny > 0 ? 1 : 0;
+  state.enx = counts.enx > 0 ? 1 : 0;
+  state.dy = counts.dy;
+  state.dx = counts.dx;
+}
 
 startTrafficFlow("Y", 1);
 startTrafficFlow("Y", 2);
@@ -230,47 +313,55 @@ startTrafficFlow("-X", 1, true);
 startTrafficFlow("-X", 2, true);
 
 setInterval(() => {
-    let { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx, } = state;
-    nx = normalizeNumberCars(nx);
-    ny = normalizeNumberCars(ny);
-    px = normalizeNumberCars(px);
-    py = normalizeNumberCars(py);
-    epy = epy > 0 ? 1 : 0;
-    epx = epx > 0 ? 1 : 0;
-    eny = eny > 0 ? 1 : 0;
-    enx = enx > 0 ? 1 : 0;
-    const lastBetterAction = betterAction;
-    betterAction = getBetterAction(`${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`);
-    if (lastBetterAction === betterAction) {
-        return
+  updateTrafficStateFromDOM();
+  
+  const { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx } = state;
+  const stateString = `${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`;
+
+  const lastBetterAction = betterAction;
+  betterAction = getBetterAction(stateString);
+
+  if (lastBetterAction === betterAction) return;
+  if (betterAction) {
+    if (betterAction === "green_EW") {
+    //   if (isAmbar) return;
+    //   trafficEnabledX = false;
+    //   trafficEnabledY = false;
+    //   isAmbar = true;
+    //   setTimeout(() => {
+    //     trafficEnabledX = true;
+    //     trafficEnabledY = false;
+    //     state.al = 0;
+    //     state.tw = 0;
+    //     isAmbar = false;
+    //   }, 3000);
+        trafficEnabledX = true;
+        trafficEnabledY = false;
+        state.al = 0;
+        state.tw = 0;
+        isAmbar = false;
+} else if (betterAction === "green_NS") {
+    //   if (isAmbar) return;
+    //   trafficEnabledX = false;
+    //   trafficEnabledY = false;
+    //   isAmbar = true;
+    //   setTimeout(() => {
+    //     trafficEnabledX = false;
+    //     trafficEnabledY = true;
+    //     state.al = 1;
+    //     state.tw = 0;
+    //     isAmbar = false;
+    //   }, 3000);
+    trafficEnabledX = false;
+    trafficEnabledY = true;
+    state.al = 1;
+    state.tw = 0;
+    isAmbar = false;
     }
-    if (betterAction) {
-        if (betterAction === "green_EW") {
-            if (isAmbar) return;
-
-            trafficEnabledX = false;
-            trafficEnabledY = false;
-            isAmbar = true;
-
-            setTimeout(() => {
-                trafficEnabledX = true;
-                trafficEnabledY = false;
-                state.al = trafficEnabledY ? 1 : 0;
-                isAmbar = false;
-            }, 3000); 
-        } else if (betterAction === "green_NS") {
-            if (isAmbar) return;
-
-            trafficEnabledX = false;
-            trafficEnabledY = false;
-            isAmbar = true;
-
-            setTimeout(() => {
-                trafficEnabledX = false;
-                trafficEnabledY = true;
-                state.al = trafficEnabledY ? 1 : 0;
-                isAmbar = false;
-            }, 3000); 
-        }
-    }
+  }
+  console.log("X: " + trafficEnabledX)
+  console.log("Y: "+trafficEnabledY)
+  // Aumentar tiempo de espera si semáforo está en rojo para una dirección
+//   if (!trafficEnabledX) state.tw++;
+//   if (!trafficEnabledY) state.tw++;
 }, 1000);
