@@ -37,7 +37,6 @@ const translator = {
     "X" : ["left", "Width"],
     "-X" : ["right", "Width"],
 }
-
 const carArrayImg = ["car", "sc"];
 const carWeightsImg = [0.95, 0.05]
 
@@ -79,7 +78,6 @@ function weightedRandomChoice(items, weights) {
 
 
 function generateCar(axis, img, type, rail) {
-    const axisLower = axis.at(axis.length-1).toLowerCase();
     const carElement = document.createElement("img");
     const intervalLimits = !personArrayImg.includes(type) ? [0.31, 0.33, true] : [0.36, 0.38, false]
     
@@ -88,24 +86,16 @@ function generateCar(axis, img, type, rail) {
     carElement.classList.add("car"+axis+"-"+rail);
     carElement.src = "./img/"+img+".png";
 
-    // let hasPassedCrossLine = false;
-
 
     function monitorPosition() {
-        if (!carElement.isConnected) return;
         const pos = translator[axis][0];
         const posValue = parseFloat(getComputedStyle(carElement)[pos]);
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
         const posRatio = posValue / parentSize;
 
-        let isRed = false;
-        if (axis === "Y" || axis === "-Y") {
-            isRed = !trafficEnabledY;
-        } else if (axis === "X" || axis === "-X") {
-            isRed = !trafficEnabledX;
-        }
-        let shouldPause = false;
+        const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
 
+        let shouldPause = false;
 
         if (isRed) {
             let siblingRatio = -Infinity;
@@ -120,68 +110,26 @@ function generateCar(axis, img, type, rail) {
             }
         }
 
-        console.log(isRed)
-        carElement.style.animationPlayState = shouldPause?"pause":"running";
-        // console.log(carElement.style.animationPlayState)
-        // hasPassedCrossLine = posRatio > intervalLimits[1];
-
-        // if (hasPassedCrossLine) {
-        //     if (!intervalLimits[2]) {
-        //         state["p"+axisLower]--;
-        //         if (type === "sp") {
-        //             state["ep"+axisLower]--;
-        //         }
-        //     } else {
-        //         state["n"+axisLower]--;
-        //         if (type === "sc") {
-        //             state["en"+axisLower]--;
-        //         }
-        //     }
-        // }
+        carElement.style.animationPlayState = shouldPause ? "paused" : "running";
 
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    if (!intervalLimits[2]) { // is person        
+    if (!intervalLimits[2]) {
+        // is person
         carElement.classList.add("person"+axis+"-"+rail);
         carElement.classList.add("person");
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
-        // state["p"+axisLower]++;
-        // if (type === "sp") {
-        //     state["ep"+axisLower]++;
-        // }
-    } else {        
+    } else {
+        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
-        // state["n"+axisLower]++;
-        // if (type === "sc") {
-        //     state["en"+axisLower]++;
-        // }
     }
     
     carElement.addEventListener("animationend", () => {
-        carElement.remove();        
+        carElement.remove();
     });
     requestAnimationFrame(monitorPosition);
 }
-
-
-// document.addEventListener("click", () => {
-//     if (isAmbar) return;
-
-//     let newTrafficEnabledX = !trafficEnabledX;
-//     let newTrafficEnabledY = !trafficEnabledY;
-
-//     trafficEnabledX = false;
-//     trafficEnabledY = false;
-//     isAmbar = true;
-
-//     setTimeout(() => {
-//         trafficEnabledX = newTrafficEnabledX;
-//         trafficEnabledY = newTrafficEnabledY;
-//         state.al = trafficEnabledY ? 1 : 0;
-//         isAmbar = false;
-//     }, 3000); 
-// });
 
 function startTrafficFlow(axis, rail, people=false) {
     function spawn() {
@@ -209,7 +157,6 @@ function startTrafficFlow(axis, rail, people=false) {
     }
     spawn();
 }
-
 function normalizeNumberCars(n) {
     if (n <= 0) { return 0; }
     if (n < 8) { return 1; }
@@ -295,6 +242,50 @@ function updateTrafficStateFromDOM() {
   state.dx = counts.dx;
 }
 
+setInterval(() => {
+  updateTrafficStateFromDOM();
+  
+  const { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx } = state;
+  const stateString = `${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`;
+
+  const lastBetterAction = betterAction;
+  betterAction = getBetterAction(stateString);
+
+  if (lastBetterAction === betterAction) return;
+  if (betterAction) {
+    if (betterAction === "green_EW") {
+      if (isAmbar) return;
+      trafficEnabledX = false;
+      trafficEnabledY = false;
+      isAmbar = true;
+      setTimeout(() => {
+        trafficEnabledX = true;
+        trafficEnabledY = false;
+        state.al = 0;
+        state.tw = 0;
+        isAmbar = false;
+      }, 3000);
+} else if (betterAction === "green_NS") {
+      if (isAmbar) return;
+      trafficEnabledX = false;
+      trafficEnabledY = false;
+      isAmbar = true;
+      setTimeout(() => {
+        trafficEnabledX = false;
+        trafficEnabledY = true;
+        state.al = 1;
+        state.tw = 0;
+        isAmbar = false;
+      }, 3000);
+    }
+  }
+  console.log("X: " + trafficEnabledX)
+  console.log("Y: "+trafficEnabledY)
+  // Aumentar tiempo de espera si semáforo está en rojo para una dirección
+//   if (!trafficEnabledX) state.tw++;
+//   if (!trafficEnabledY) state.tw++;
+}, 1000);
+
 startTrafficFlow("Y", 1);
 startTrafficFlow("Y", 2);
 startTrafficFlow("-Y", 1);
@@ -313,56 +304,3 @@ startTrafficFlow("X", 2, true);
 startTrafficFlow("-X", 1, true);
 startTrafficFlow("-X", 2, true);
 
-setInterval(() => {
-  updateTrafficStateFromDOM();
-  
-  const { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx } = state;
-  const stateString = `${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`;
-
-  const lastBetterAction = betterAction;
-  betterAction = getBetterAction(stateString);
-
-  if (lastBetterAction === betterAction) return;
-  if (betterAction) {
-    if (betterAction === "green_EW") {
-    //   if (isAmbar) return;
-    //   trafficEnabledX = false;
-    //   trafficEnabledY = false;
-    //   isAmbar = true;
-    //   setTimeout(() => {
-    //     trafficEnabledX = true;
-    //     trafficEnabledY = false;
-    //     state.al = 0;
-    //     state.tw = 0;
-    //     isAmbar = false;
-    //   }, 3000);
-        trafficEnabledX = true;
-        trafficEnabledY = false;
-        state.al = 0;
-        state.tw = 0;
-        isAmbar = false;
-} else if (betterAction === "green_NS") {
-    //   if (isAmbar) return;
-    //   trafficEnabledX = false;
-    //   trafficEnabledY = false;
-    //   isAmbar = true;
-    //   setTimeout(() => {
-    //     trafficEnabledX = false;
-    //     trafficEnabledY = true;
-    //     state.al = 1;
-    //     state.tw = 0;
-    //     isAmbar = false;
-    //   }, 3000);
-    trafficEnabledX = false;
-    trafficEnabledY = true;
-    state.al = 1;
-    state.tw = 0;
-    isAmbar = false;
-    }
-  }
-  console.log("X: " + trafficEnabledX)
-  console.log("Y: "+trafficEnabledY)
-  // Aumentar tiempo de espera si semáforo está en rojo para una dirección
-//   if (!trafficEnabledX) state.tw++;
-//   if (!trafficEnabledY) state.tw++;
-}, 1000);
