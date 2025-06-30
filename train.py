@@ -8,9 +8,9 @@ actions = ["green_NS", "green_EW", "stay"]
 Q = {}
 
 # Hiperparámetros
-alpha = 0.1     # learning rate
-gamma = 0.9     # discount factor
-epsilon = 0.5   # exploración
+alpha = 0.1     # learning rate (Un alpha bajo aprende lentamente, un alpha alto puede ser inestable)
+gamma = 0.9     # discount factor (gamma alto prioriza recompensas futuras, gamma bajo prioriza recompensas inmediatas)
+epsilon = 0.5   # exploración (epsilon alto explora más, epsilon bajo explora menos)
 
 def get_state():
     ny = random.randint(0, 3)
