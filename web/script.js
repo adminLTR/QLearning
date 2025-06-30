@@ -12,11 +12,10 @@ const state = {
     dy: 1,
     dx: 1,
 }
-
 let trafficEnabledY = false;
 let trafficEnabledX = true;
 
-let isAmbar = false;
+let isAmbar = false; 
 
 let timeOutIdXp; //X
 let timeOutIdXn; //-X
@@ -120,8 +119,10 @@ function generateCar(axis, img, type, rail) {
                 shouldPause = true;
             }
         }
+
+        console.log(isRed)
         carElement.style.animationPlayState = shouldPause?"pause":"running";
-        console.log(carElement.style.animationPlayState)
+        // console.log(carElement.style.animationPlayState)
         // hasPassedCrossLine = posRatio > intervalLimits[1];
 
         // if (hasPassedCrossLine) {
