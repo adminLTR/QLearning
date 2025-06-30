@@ -59,7 +59,6 @@ function getBetterAction(stateString) {
       mejorAccion = accion;
     }
   }
-  console.log(mejorAccion)
   return mejorAccion;
 }
 
@@ -85,9 +84,11 @@ function generateCar(axis, img, type, rail) {
     carElement.classList.add("car"+axis);
     carElement.classList.add("car"+axis+"-"+rail);
     carElement.src = "./img/"+img+".png";
+    carElement.dataset.passed = "false";
 
 
     function monitorPosition() {
+      if (!carElement.isConnected) return;
         const pos = translator[axis][0];
         const posValue = parseFloat(getComputedStyle(carElement)[pos]);
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
@@ -118,10 +119,11 @@ function generateCar(axis, img, type, rail) {
     if (!intervalLimits[2]) {
         // is person
         carElement.classList.add("person"+axis+"-"+rail);
+        carElement.classList.add("person"+axis);
         carElement.classList.add("person");
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
     } else {
-        
+        carElement.classList.add("carro"+axis);
         document.getElementById("container"+axis+"-"+rail).append(carElement);
     }
     
@@ -168,6 +170,13 @@ function normalizeDistance(n) {
     if (n < 0.25) { return 1; }
     if (n < 16) { return 2; }
     return 3;
+  }
+function normalizeTime(t) {
+  if (t <= 0) { return 0; }
+  if (t < 10) { return 1; }
+  if (t < 16) { return 2; }
+  return 3;
+
 }
 
 function updateTrafficStateFromDOM() {
@@ -193,7 +202,7 @@ function updateTrafficStateFromDOM() {
   };
 
   const updateAxis = (axis, type, isPerson) => {
-    const className = isPerson ? `.person${axis}` : `.car${axis}`;
+    const className = isPerson ? `.person${axis}` : `.carro${axis}`;
     const elements = document.querySelectorAll(className);
     const [posProp, sizeProp] = axisMap[axis];
 
@@ -216,6 +225,17 @@ function updateTrafficStateFromDOM() {
         if (ratio < minDistance) {
           minDistance = ratio;
         }
+      } else {
+        if (el.dataset.passed === "false") {
+          el.dataset.passed = "true";
+          if (isPerson) {
+            counts[`p${axis.at(-1).toLowerCase()}`]--;
+            if (el.src.includes("sp")) counts[`ep${axis.at(-1).toLowerCase()}`]--;
+          } else {
+            counts[`n${axis.at(-1).toLowerCase()}`]--;
+            if (el.src.includes("sc")) counts[`en${axis.at(-1).toLowerCase()}`]--;
+          }
+        }
       }
     });
     if (!isPerson) {
@@ -228,7 +248,6 @@ function updateTrafficStateFromDOM() {
     updateAxis(axis, "car", false);
     updateAxis(axis, "person", true);
   });
-
   // Asignar al estado principal
   state.ny = normalizeNumberCars(counts.ny);
   state.nx = normalizeNumberCars(counts.nx);
@@ -246,11 +265,11 @@ setInterval(() => {
   updateTrafficStateFromDOM();
   
   const { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx } = state;
-  const stateString = `${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`;
-
+  const stateString = `${ny}_${nx}_${al}_${normalizeTime(tw)}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`;
   const lastBetterAction = betterAction;
   betterAction = getBetterAction(stateString);
 
+  console.log(stateString + ": " + betterAction)
   if (lastBetterAction === betterAction) return;
   if (betterAction) {
     if (betterAction === "green_EW") {
@@ -264,8 +283,8 @@ setInterval(() => {
         state.al = 0;
         state.tw = 0;
         isAmbar = false;
-      }, 3000);
-} else if (betterAction === "green_NS") {
+      }, 1500);
+    } else if (betterAction === "green_NS") {
       if (isAmbar) return;
       trafficEnabledX = false;
       trafficEnabledY = false;
@@ -276,15 +295,13 @@ setInterval(() => {
         state.al = 1;
         state.tw = 0;
         isAmbar = false;
-      }, 3000);
+      }, 1500);
     }
   }
-  console.log("X: " + trafficEnabledX)
-  console.log("Y: "+trafficEnabledY)
   // Aumentar tiempo de espera si semáforo está en rojo para una dirección
-//   if (!trafficEnabledX) state.tw++;
-//   if (!trafficEnabledY) state.tw++;
-}, 1000);
+  if (!trafficEnabledX) state.tw++;
+  if (!trafficEnabledY) state.tw++;
+}, 500);
 
 startTrafficFlow("Y", 1);
 startTrafficFlow("Y", 2);
