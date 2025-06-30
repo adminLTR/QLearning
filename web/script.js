@@ -38,10 +38,10 @@ const translator = {
     "-X" : ["right", "Width"],
 }
 const carArrayImg = ["car", "sc"];
-const carWeightsImg = [0.95, 0.05]
+const carWeightsImg = [0.99, 0.01]
 
 const personArrayImg = ["person", "sp"];
-const personWeightsImg = [0.95, 0.05]
+const personWeightsImg = [0.995, 0.005]
 
 function getBetterAction(stateString) {
   if (!(stateString in QTABLE)) {
@@ -137,7 +137,7 @@ function startTrafficFlow(axis, rail, people=false) {
     function spawn() {
         let randomDelay, timeoutId, randomType, randomTypeImg;
         if (people) {
-            randomDelay = Math.random() * 15000 + 6000;
+            randomDelay = Math.random() * 15000 + 5000;
             timeoutId = setTimeout(spawn, randomDelay);
     
             randomType = weightedRandomChoice([...personArrayImg], [...personWeightsImg]);
@@ -269,7 +269,7 @@ setInterval(() => {
   const lastBetterAction = betterAction;
   betterAction = getBetterAction(stateString);
 
-  console.log(stateString + ": " + betterAction)
+  console.log(stateString + ": " + betterAction + " -> x:" + trafficEnabledX + " y:" + trafficEnabledY)
   if (lastBetterAction === betterAction) return;
   if (betterAction) {
     if (betterAction === "green_EW") {
