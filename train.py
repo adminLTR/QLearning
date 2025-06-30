@@ -13,17 +13,17 @@ gamma = 0.9     # discount factor (gamma alto prioriza recompensas futuras, gamm
 epsilon = 0.5   # exploración (epsilon alto explora más, epsilon bajo explora menos)
 
 def get_state():
-    ny = random.randint(0, 3)
-    nx = random.randint(0, 3)
-    al = random.randint(0, 1)
+    ny = random.randint(0, 3) # 
+    nx = random.randint(0, 3) #
+    al = random.randint(0, 1) #
     tw = random.randint(0, 3)
-    py = random.randint(0, 3)
-    px = random.randint(0, 3)
-    epy = random.randint(0, 1)
-    epx = random.randint(0, 1)
-    eny = random.randint(0, 1)
-    enx = random.randint(0, 1)
-    dy = random.randint(0, 3)
+    py = random.randint(0, 3) #
+    px = random.randint(0, 3) #
+    epy = random.randint(0, 1) # 
+    epx = random.randint(0, 1) #
+    eny = random.randint(0, 1) #
+    enx = random.randint(0, 1) #
+    dy = random.randint(0, 3) 
     dx = random.randint(0, 3)
     return f"{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"
 
@@ -95,11 +95,7 @@ def save_q_table(filename="qtable.json"):
     with open(filename, "w") as f:
         json.dump(Q, f, indent=2)
 
-def obtener_mejor_accion(state):
-    if state not in Q:
-        print(f"Estado '{state}' no encontrado en la Q-table.")
-        return None
-    return max(Q[state], key=Q[state].get)
+  
 
 def train(episodes=10000, autosave_interval=1000000):
     unique_states = set()

@@ -1,3 +1,18 @@
+const state = {
+    nx: 0,
+    ny: 0,
+    al: 0,
+    tw: 2,
+    py: 0,
+    px: 0,
+    epy: 0,
+    epx: 0,
+    eny: 0,
+    enx: 0,
+    dy: 1,
+    dx: 1,
+}
+
 let trafficEnabledY = false;
 let trafficEnabledX = true;
 
@@ -7,6 +22,8 @@ let timeOutIdXp; //X
 let timeOutIdXn; //-X
 let timeOutIdYp; //Y
 let timeOutIdYn; //-Y
+
+let betterAction;
 
 const imgLen = {
     car: 5,
@@ -22,16 +39,32 @@ const translator = {
     "-X" : ["right", "Width"],
 }
 
-const counters = {
-    "Y" : 0,
-    "X" : 0,
-}
-
 const carArrayImg = ["car", "sc"];
 const carWeightsImg = [0.95, 0.05]
 
 const personArrayImg = ["person", "sp"];
 const personWeightsImg = [0.95, 0.05]
+
+function getBetterAction(stateString) {
+  if (!(stateString in QTABLE)) {
+    console.log(`Estado '${stateString}' no encontrado en la Q-table.`);
+    return null;
+  }
+
+  const acciones = QTABLE[stateString];
+  let mejorAccion = null;
+  let mejorValor = -Infinity;
+
+  for (const accion in acciones) {
+    if (acciones[accion] > mejorValor) {
+      mejorValor = acciones[accion];
+      mejorAccion = accion;
+    }
+  }
+  console.log(state)
+  console.log(stateString)
+  return mejorAccion;
+}
 
 function weightedRandomChoice(items, weights) {
     const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -48,6 +81,7 @@ function weightedRandomChoice(items, weights) {
 
 
 function generateCar(axis, img, type, rail) {
+    const axisLower = axis.at(axis.length-1).toLowerCase();
     const carElement = document.createElement("img");
     const intervalLimits = !personArrayImg.includes(type) ? [0.31, 0.33, true] : [0.36, 0.38, false]
     
@@ -58,6 +92,7 @@ function generateCar(axis, img, type, rail) {
 
 
     function monitorPosition() {
+        if (!carElement.isConnected) return;
         const pos = translator[axis][0];
         const posValue = parseFloat(getComputedStyle(carElement)[pos]);
         const parentSize = carElement.parentElement["client" + translator[axis][1]];
@@ -66,6 +101,8 @@ function generateCar(axis, img, type, rail) {
         const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
 
         let shouldPause = false;
+
+        
 
         if (isRed) {
             let siblingRatio = -Infinity;
@@ -79,26 +116,43 @@ function generateCar(axis, img, type, rail) {
                 shouldPause = true;
             }
         }
+        carElement.style.animationPlayState = shouldPause?"pause":"running";
 
-        carElement.style.animationPlayState = shouldPause ? "paused" : "running";
+        if (posRatio > intervalLimits[1]) {
+            if (!intervalLimits[2]) {
+                state["p"+axisLower]--;
+                if (type === "sp") {
+                    state["ep"+axisLower]--;
+                }
+            } else {
+                state["n"+axisLower]--;
+                if (type === "sc") {
+                    state["en"+axisLower]--;
+                }
+            }
+        }
 
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
-    if (!intervalLimits[2]) {
-        // is person
+    if (!intervalLimits[2]) { // is person        
         carElement.classList.add("person"+axis+"-"+rail);
         carElement.classList.add("person");
         document.getElementById("pedestrians"+axis+"-"+rail).append(carElement);
-    } else {
-        
+        state["p"+axisLower]++;
+        if (type === "sp") {
+            state["ep"+axisLower]++;
+        }
+    } else {        
         document.getElementById("container"+axis+"-"+rail).append(carElement);
+        state["n"+axisLower]++;
+        if (type === "sc") {
+            state["en"+axisLower]++;
+        }
     }
-    counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
-        carElement.remove();
-        counters[axis[axis.length-1]]--;
+        carElement.remove();        
     });
     requestAnimationFrame(monitorPosition);
 }
@@ -117,6 +171,7 @@ document.addEventListener("click", () => {
     setTimeout(() => {
         trafficEnabledX = newTrafficEnabledX;
         trafficEnabledY = newTrafficEnabledY;
+        state.al = trafficEnabledY ? 1 : 0;
         isAmbar = false;
     }, 3000); 
 });
@@ -148,20 +203,74 @@ function startTrafficFlow(axis, rail, people=false) {
     spawn();
 }
 
-startTrafficFlow("Y", 1)
-startTrafficFlow("Y", 2)
-startTrafficFlow("-Y", 1)
-startTrafficFlow("-Y", 2)
-startTrafficFlow("X", 1)
-startTrafficFlow("X", 2)
-startTrafficFlow("-X", 1)
-startTrafficFlow("-X", 2)
+function normalizeNumberCars(n) {
+    if (n <= 0) { return 0; }
+    if (n < 8) { return 1; }
+    if (n < 16) { return 2; }
+    return 3;
+}
 
-startTrafficFlow("Y", 1, true)
-startTrafficFlow("Y", 2, true)
-startTrafficFlow("-Y", 1, true)
-startTrafficFlow("-Y", 2, true)
-startTrafficFlow("X", 1, true)
-startTrafficFlow("X", 2, true)
-startTrafficFlow("-X", 1, true)
-startTrafficFlow("-X", 2, true)
+
+startTrafficFlow("Y", 1);
+startTrafficFlow("Y", 2);
+startTrafficFlow("-Y", 1);
+startTrafficFlow("-Y", 2);
+startTrafficFlow("X", 1);
+startTrafficFlow("X", 2);
+startTrafficFlow("-X", 1);
+startTrafficFlow("-X", 2);
+
+startTrafficFlow("Y", 1, true);
+startTrafficFlow("Y", 2, true);
+startTrafficFlow("-Y", 1, true);
+startTrafficFlow("-Y", 2, true);
+startTrafficFlow("X", 1, true);
+startTrafficFlow("X", 2, true);
+startTrafficFlow("-X", 1, true);
+startTrafficFlow("-X", 2, true);
+
+setInterval(() => {
+    let { nx, ny, al, tw, py, px, epy, epx, eny, enx, dy, dx, } = state;
+    nx = normalizeNumberCars(nx);
+    ny = normalizeNumberCars(ny);
+    px = normalizeNumberCars(px);
+    py = normalizeNumberCars(py);
+    epy = epy > 0 ? 1 : 0;
+    epx = epx > 0 ? 1 : 0;
+    eny = eny > 0 ? 1 : 0;
+    enx = enx > 0 ? 1 : 0;
+    const lastBetterAction = betterAction;
+    betterAction = getBetterAction(`${ny}_${nx}_${al}_${tw}_${py}_${px}_${epy}_${epx}_${eny}_${enx}_${dy}_${dx}`);
+    if (lastBetterAction === betterAction) {
+        return
+    }
+    if (betterAction) {
+        if (betterAction === "green_EW") {
+            if (isAmbar) return;
+
+            trafficEnabledX = false;
+            trafficEnabledY = false;
+            isAmbar = true;
+
+            setTimeout(() => {
+                trafficEnabledX = true;
+                trafficEnabledY = false;
+                state.al = trafficEnabledY ? 1 : 0;
+                isAmbar = false;
+            }, 3000); 
+        } else if (betterAction === "green_NS") {
+            if (isAmbar) return;
+
+            trafficEnabledX = false;
+            trafficEnabledY = false;
+            isAmbar = true;
+
+            setTimeout(() => {
+                trafficEnabledX = false;
+                trafficEnabledY = true;
+                state.al = trafficEnabledY ? 1 : 0;
+                isAmbar = false;
+            }, 3000); 
+        }
+    }
+}, 1000);
