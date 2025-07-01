@@ -1,101 +1,53 @@
 import json
-import random
 
-actions = ["green_NS", "green_EW"]
-Q = {}
+class TestCase:
+    def __init__(self, state, spected_value):
+        self.state = state
+        self.spected_value = spected_value
 
-alpha = 0.1  # learning rate
-gamma = 0.9  # discount factor
-epsilon = 0.2
+    def test(self, qtable):
+        tested_value = get_from_qtable(self.state)
+        return self.spected_value == tested_value
 
-def get_state() -> str:
-    """
-    Returns a random state in a dict\n
-    Where 
-        ny: Number of cars in Y (North-South)
-        nx: Number of cars in X (East-West)
-        al: Actual light (X=0 or Y=1)
-        tw: Time cars are already waiting in red side
-        py: Number of pedestrians in Y (North-South)
-        px: Number of pedestrians in X (East-West)
-        epy: Number of special pedestrians in Y (North-South)
-        epx: Number of special pedestrians in X (East-West)
-        eny: Number of special cars in Y (North-South)
-        enx: Number of special cars in X (East-West)
-        dy: Distance of the nearest car to pedestrian line in Y (North-South)
-        dx: Distance of the nearest car to pedestrian line in X (East-West)
-    """
-    ny = random.randint(0, 3)
-    nx = random.randint(0, 3)
-    al = random.randint(0, 1)
-    return f"{ny}_{nx}_{al}"
-
-def choose_action(state:str) -> str:
-    """
-    Chooses an action depending on state in params\n
-    if random() < epsilon: (being epsilon a hyperparameter of QLearning)\n
-        returns a random action
-    else:
-        returns the best solution
-    """
-    if state not in Q:
-        Q[state] = {a: 0.0 for a in actions} # Inserts the new state into the QTable with initial data: 0
-    if random.random() < epsilon:
-        return random.choice(actions)
-    return max(Q[state], key=Q[state].get)
-
-def get_reward(state:str, action:str) -> int:
-    """
-    Returns the reward depending on the state and the action taken by the agent.\n
-    If results is negative, it's a bad desicion, else is a good desicion\n
-    if action == "green_NS":
-        return ns - ew
-    else:
-        return ew - ns
-    
-    """
-    ns, ew = map(int, state.split("_"))
-    if action == "green_NS":
-        return ns - ew
-    else:
-        return ew - ns
-
-def update_q(state:str, action:str, reward:int, next_state:str) -> None:
-    """
-    
-    """
-    if next_state not in Q:
-        Q[next_state] = {a: 0.0 for a in actions}
-    max_q_next = max(Q[next_state].values())
-    Q[state][action] += alpha * (reward + gamma * max_q_next - Q[state][action])
-
-def train(episodes=1000):
-    for _ in range(episodes):
-        state = get_state()
-        action = choose_action(state)
-        reward = get_reward(state, action)
-        next_state = get_state()
-        update_q(state, action, reward, next_state)
-
-def save_q_table(filename="qtable.json", csvfile="qtable.csv"):
-    with open(filename, "w") as f:
-        json.dump(Q, f, indent=2)
-
-def obtener_mejor_accion(state):
-    if state not in Q:
-        print(f"Estado '{state}' no encontrado en la Q-table.")
+def get_from_qtable(state):
+    global qtable
+    if state not in qtable:
         return None
-    
-    acciones = Q[state]
-    mejor_accion = max(acciones, key=acciones.get)
-    return mejor_accion
+    actions = qtable[state]
+    better_action = max(actions, key=actions.get)
+    return better_action
 
-# training
-train(10000)
-save_q_table("qtable.json")
+with open('./qtable.json', 'r') as f:
+    qtable = json.load(f)
 
-estado = "1_3"
-accion = obtener_mejor_accion(estado)
+corrects = 0
+incorrects = 0
 
-if accion:
-    print(f"Mejor acción para el estado {estado}: {accion}")
+#"{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"
+test_cases = [
+    TestCase("3_2_0_1_1_2_0_0_0_0_1_2", "green_NS"),
+    TestCase("3_2_0_1_1_2_0_0_1_0_1_2", "green_NS"),
+    TestCase("3_2_0_1_1_2_0_0_0_1_1_2", "green_EW"),
+    TestCase("1_3_0_1_1_2_0_0_0_0_1_2", "green_EW"),
+
+    # Nuevos casos agregados
+    TestCase("0_0_1_0_0_0_0_0_0_0_0_0", "green_EW"),  # Estado inicial, sin tráfico, mantener actual (EW)
+    TestCase("3_1_1_2_2_1_1_0_0_0_1_1", "green_NS"),  # Más tráfico y espera en Y
+    TestCase("1_3_0_3_1_2_0_1_0_1_1_1", "green_EW"),  # Más tráfico/espera en X
+    TestCase("2_2_0_2_3_3_1_1_0_0_2_1", "green_NS"),  # Empate pero más epy
+    TestCase("2_3_1_1_0_0_0_0_1_1_1_2", "green_EW"),  # Nada en Y, sc en X
+    TestCase("0_2_1_0_0_0_0_0_0_0_0_3", "green_EW"),  # Sólo autos viniendo desde X
+    TestCase("2_2_0_3_2_2_1_1_1_1_1_1", "green_NS"),  # Empate total, mantener Y
+    TestCase("1_1_1_0_1_1_0_0_0_0_2_3", "green_EW"),  # Ligeramente más en X
+    TestCase("3_3_0_0_3_3_1_1_1_1_3_3", "green_NS"),  # Tráfico completo, dar paso a Y
+]
+
+for tc in test_cases:
+    if tc.test(qtable):
+        corrects += 1
+    else:
+        incorrects += 1
+        print(f"FALLÓ: Estado: {tc.state} - Esperado: {tc.spected_value} - Obtenido: {get_from_qtable(tc.state)}")
+
+print(f"\n✅ Correctos: {corrects}")
+print(f"❌ Incorrectos: {incorrects}")
