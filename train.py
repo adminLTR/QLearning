@@ -39,15 +39,15 @@ def get_reward(state, action):
     reward = 0
 
     if action == "green_NS":
-        reward += (ny * 2) - (nx * 1.5)
-        reward += (epy * 5) + (py * 2) + (eny * 3)
+        reward += (ny) - (nx)
+        reward += (epy * 5) + (py * 2) + (eny * 10)
         reward -= (tw * 1.5)
         reward += max(0, (3 - dy))
         reward -= (px + epx * 2)
 
     elif action == "green_EW":
-        reward += (nx * 2) - (ny * 1.5)
-        reward += (epx * 5) + (px * 2) + (enx * 3)
+        reward += (nx) - (ny)
+        reward += (epx * 5) + (px * 2) + (enx * 10)
         reward -= (tw * 1.5)
         reward += max(0, (3 - dx))
         reward -= (py + epy * 2)
@@ -97,7 +97,7 @@ def save_q_table(filename="qtable.json"):
 
   
 
-def train(episodes=10000, autosave_interval=1000000):
+def train(episodes=10000):
     unique_states = set()
     start_time = time.time()
 

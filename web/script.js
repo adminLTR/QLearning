@@ -38,7 +38,7 @@ const translator = {
     "-X" : ["right", "Width"],
 }
 const carArrayImg = ["car", "sc"];
-const carWeightsImg = [0.99, 0.01]
+const carWeightsImg = [0.99, 0.01 ]
 
 const personArrayImg = ["person", "sp"];
 const personWeightsImg = [0.995, 0.005]
