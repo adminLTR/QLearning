@@ -1,16 +1,10 @@
 const state = {
-    nx: 0,
-    ny: 0,
-    al: 0,
-    tw: 2,
-    py: 0,
-    px: 0,
-    epy: 0,
-    epx: 0,
-    eny: 0,
-    enx: 0,
-    dy: 1,
-    dx: 1,
+    nx: 0, ny: 0,
+    al: 0, tw: 0,
+    py: 0, px: 0,
+    epy: 0, epx: 0,
+    eny: 0, enx: 0,
+    dy: 0, dx: 0,
 }
 let trafficEnabledY = false;
 let trafficEnabledX = true;
@@ -24,24 +18,6 @@ let timeOutIdYn; //-Y
 
 let betterAction;
 
-const imgLen = {
-    car: 5,
-    person: 7,
-    sc: 3,
-    sp: 1,
-}
-
-const translator = {
-    "Y" : ["top", "Height"],
-    "-Y" : ["bottom", "Height"],
-    "X" : ["left", "Width"],
-    "-X" : ["right", "Width"],
-}
-const carArrayImg = ["car", "sc"];
-const carWeightsImg = [0.99, 0.01 ]
-
-const personArrayImg = ["person", "sp"];
-const personWeightsImg = [0.995, 0.005]
 
 function getBetterAction(stateString) {
   if (!(stateString in QTABLE)) {
@@ -159,25 +135,7 @@ function startTrafficFlow(axis, rail, people=false) {
     }
     spawn();
 }
-function normalizeNumberCars(n) {
-    if (n <= 0) { return 0; }
-    if (n < 8) { return 1; }
-    if (n < 16) { return 2; }
-    return 3;
-}
-function normalizeDistance(n) {
-    if (n <= 0) { return 0; }
-    if (n < 0.25) { return 1; }
-    if (n < 16) { return 2; }
-    return 3;
-  }
-function normalizeTime(t) {
-  if (t <= 0) { return 0; }
-  if (t < 10) { return 1; }
-  if (t < 16) { return 2; }
-  return 3;
 
-}
 
 function updateTrafficStateFromDOM() {
   const axisMap = {
@@ -272,7 +230,7 @@ setInterval(() => {
   console.log(stateString + ": " + betterAction + " -> x:" + trafficEnabledX + " y:" + trafficEnabledY)
   if (lastBetterAction === betterAction) return;
   if (betterAction) {
-    if (betterAction === "green_EW") {
+    if (betterAction === "green_X") {
       if (isAmbar) return;
       trafficEnabledX = false;
       trafficEnabledY = false;
@@ -284,7 +242,7 @@ setInterval(() => {
         state.tw = 0;
         isAmbar = false;
       }, 1500);
-    } else if (betterAction === "green_NS") {
+    } else {
       if (isAmbar) return;
       trafficEnabledX = false;
       trafficEnabledY = false;

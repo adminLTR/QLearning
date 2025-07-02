@@ -25,21 +25,22 @@ incorrects = 0
 
 #"{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"
 test_cases = [
-    TestCase("3_2_0_1_1_2_0_0_0_0_1_2", "green_NS"),
-    TestCase("3_2_0_1_1_2_0_0_1_0_1_2", "green_NS"),
-    TestCase("3_2_0_1_1_2_0_0_0_1_1_2", "green_EW"),
-    TestCase("1_3_0_1_1_2_0_0_0_0_1_2", "green_EW"),
+    TestCase("3_2_0_1_1_2_0_0_0_0_1_2", "green_Y"),
+    TestCase("3_2_0_1_1_2_0_0_1_0_1_2", "green_Y"),
+    TestCase("3_2_0_1_1_2_0_0_0_1_1_2", "green_X"),
+    TestCase("1_3_0_1_1_2_0_0_0_0_1_2", "green_X"),
 
     # Nuevos casos agregados
-    TestCase("0_0_1_0_0_0_0_0_0_0_0_0", "green_EW"),  # Estado inicial, sin tráfico, mantener actual (EW)
-    TestCase("3_1_1_2_2_1_1_0_0_0_1_1", "green_NS"),  # Más tráfico y espera en Y
-    TestCase("1_3_0_3_1_2_0_1_0_1_1_1", "green_EW"),  # Más tráfico/espera en X
-    TestCase("2_2_0_2_3_3_1_1_0_0_2_1", "green_NS"),  # Empate pero más epy
-    TestCase("2_3_1_1_0_0_0_0_1_1_1_2", "green_EW"),  # Nada en Y, sc en X
-    TestCase("0_2_1_0_0_0_0_0_0_0_0_3", "green_EW"),  # Sólo autos viniendo desde X
-    TestCase("2_2_0_3_2_2_1_1_1_1_1_1", "green_NS"),  # Empate total, mantener Y
-    TestCase("1_1_1_0_1_1_0_0_0_0_2_3", "green_EW"),  # Ligeramente más en X
-    TestCase("3_3_0_0_3_3_1_1_1_1_3_3", "green_NS"),  # Tráfico completo, dar paso a Y
+    TestCase("0_0_1_0_0_0_0_0_0_0_0_0", "green_X"),  # Estado inicial, sin tráfico, mantener actual (EW)
+    TestCase("3_1_1_2_2_1_1_0_0_0_1_1", "green_Y"),  # Más tráfico y espera en Y
+    TestCase("1_3_0_3_1_2_0_1_0_1_1_1", "green_X"),  # Más tráfico/espera en X
+    TestCase("2_2_0_2_3_3_1_1_0_0_2_1", "green_Y"),  # Empate pero más epy
+    TestCase("2_3_1_1_0_0_0_0_1_1_1_2", "green_X"),  # Nada en Y, sc en X
+    TestCase("0_2_1_0_0_0_0_0_0_0_0_3", "green_X"),  # Sólo autos viniendo desde X
+    TestCase("2_2_0_3_2_2_1_1_1_1_1_1", "green_Y"),  # Empate total, mantener Y
+    TestCase("1_1_1_0_1_1_0_0_0_0_2_3", "green_X"),  # Ligeramente más en X
+    TestCase("3_3_0_0_3_3_1_1_1_1_3_3", "green_Y"),  # Tráfico completo, dar paso a Y
+    TestCase("1_3_1_0_0_2_0_0_0_0_1_1", "green_X"),  # Tráfico completo, dar paso a Y
 ]
 
 for tc in test_cases:
