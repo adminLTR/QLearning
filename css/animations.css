@@ -1,0 +1,37 @@
+
+@keyframes moveDown {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 110%;
+    /* transform: translateY(-100%); */
+  }
+}
+@keyframes moveUp {
+  0% {
+    bottom: -10%;
+  }
+  100% {
+    bottom: 110%;
+    /* transform: translateY(100%); */
+  }
+}
+@keyframes moveLeft {
+  0% {
+    left: -10%;
+  }
+  100% {
+    left: 110%;
+    /* transform: translateX(100%); */
+  }
+}
+@keyframes moveRight {
+  0% {
+    right: -10%;
+  }
+  100% {
+    right: 110%;
+    /* transform: translateX(-100%); */
+  }
+}
