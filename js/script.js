@@ -30,13 +30,13 @@ setInterval(() => {
       Generator.agent.state.tw = 0;
       isAmbar = false;
       isChanging = false;
-    }, 1500);
+    }, 3000);
   }
 
   // Aumenta tiempo si semáforo está en rojo
   if (!trafficEnabledX || !trafficEnabledY) Generator.agent.state.tw++;
 
-}, 300);
+}, 1000);
 
 Generator.startTrafficFlow("Y", 1);
 Generator.startTrafficFlow("Y", 2);
