@@ -79,7 +79,7 @@ def get_reward(state, action):
         if scx: reward -= 100
 
         # Peatones especiales
-        reward += spy * 20 - spx * 20
+        reward += spy * 3 - spx * 3
 
         # Cantidad de autos
         reward += ny * 5 - nx * 5
@@ -96,7 +96,7 @@ def get_reward(state, action):
         if scx: reward += 100
         if scy: reward -= 100
 
-        reward += spx * 20 - spy * 20
+        reward += spx * 3 - spy * 3
         reward += nx * 5 - ny * 5
         reward -= nx**2 + ny**2
         reward += px * 2 - py * 2
@@ -105,7 +105,7 @@ def get_reward(state, action):
         if dy <= 1: reward -= 5
 
     # Penaliza por mantener demasiado tiempo sin cambiar
-    reward -= tw * 2
+    reward -= tw * 10
 
     return reward
 

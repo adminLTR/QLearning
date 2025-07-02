@@ -30,8 +30,8 @@ const CONFIG =  {
             "lenImg" : 7,
         },
         "intervals" : {
-            "min" : 0.31,
-            "max" : 0.33,
+            "min" : 0.37,
+            "max" : 0.39,
         },
         "time" : {
             "min" : 5000,
@@ -41,17 +41,17 @@ const CONFIG =  {
     "car" : {
         "special" : {
             "label" : "sc",
-            "weight" : 0.1,
+            "weight" : 0.05,
             "lenImg" : 3,
         },
         "normal" : {
             "label" : "car",
-            "weight" : 0.9,
+            "weight" : 0.95,
             "lenImg" : 5,
         },
         "intervals" : {
-            "min" : 0.36,
-            "max" : 0.38,
+            "min" : 0.30,
+            "max" : 0.32,
         },
         "time" : {
             "min" : 1000,
@@ -59,3 +59,10 @@ const CONFIG =  {
         },
     }
 }
+
+let trafficEnabledY = false;
+let trafficEnabledX = true;
+
+let isAmbar = false; 
+
+let betterAction;

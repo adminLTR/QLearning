@@ -9,6 +9,14 @@ class Agent {
         dy: 0, dx: 0,
     }
 
+    counts = {
+        nx: 0, ny: 0,
+        px: 0, py: 0,
+        spx: 0, spy: 0,
+        scx: 0, scy: 0,
+        dx: 0, dy: 0,
+    };
+
     /**
      * Decides which is the best action according to highest value in QTable
      * @param {string} stateString State string in format "{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"

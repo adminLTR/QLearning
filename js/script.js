@@ -1,50 +1,31 @@
-let trafficEnabledY = false;
-let trafficEnabledX = true;
 
-let isAmbar = false; 
-
-let betterAction;
 
 const agent = new Agent();
 
 
 function updateTrafficStateFromDOM() {
-  const axisMap = {
-    "Y": ["top", "clientHeight"],
-    "-Y": ["bottom", "clientHeight"],
-    "X": ["left", "clientWidth"],
-    "-X": ["right", "clientWidth"]
-  };
-
-  // Inicializar contadores
-  const counts = {
-    nx: 0, ny: 0,
-    px: 0, py: 0,
-    spx: 0, spy: 0,
-    scx: 0, scy: 0,
-    dx: 0, dy: 0,
-  };
-
-  const updateAxis = (axis, type, isPerson) => {
+  
+  const updateAxis = (axis, type) => {
+    const isPerson = type === "person";
     const className = isPerson ? `.person${axis}` : `.carro${axis}`;
     const elements = document.querySelectorAll(className);
-    const [posProp, sizeProp] = axisMap[axis];
+    const {side, client} = TRANSLATOR[axis];
 
     let minDistance = Infinity;
     elements.forEach(el => {
-      const parentSize = el.parentElement[sizeProp];
-      const pos = parseFloat(getComputedStyle(el)[posProp]);
+      const parentSize = el.parentElement[client];
+      const pos = parseFloat(getComputedStyle(el)[side]);
       const ratio = pos / parentSize;
 
       const isBeforeCross =
         (axis === "Y" || axis === "-Y") ? (ratio <= 0.34) : (ratio <= 0.34);
       if (isBeforeCross) {
         if (isPerson) {
-          counts[`p${axis.at(-1).toLowerCase()}`]++;
-          if (el.src.includes("sp")) counts[`sp${axis.at(-1).toLowerCase()}`]++;
+          agent.counts[`p${axis.at(-1).toLowerCase()}`]++;
+          if (el.src.includes("sp")) agent.counts[`sp${axis.at(-1).toLowerCase()}`]++;
         } else {
-          counts[`n${axis.at(-1).toLowerCase()}`]++;
-          if (el.src.includes("sc")) counts[`sc${axis.at(-1).toLowerCase()}`]++;
+          agent.counts[`n${axis.at(-1).toLowerCase()}`]++;
+          if (el.src.includes("sc")) agent.counts[`sc${axis.at(-1).toLowerCase()}`]++;
         }
         if (ratio < minDistance) {
           minDistance = ratio;
@@ -53,36 +34,36 @@ function updateTrafficStateFromDOM() {
         if (el.dataset.passed === "false") {
           el.dataset.passed = "true";
           if (isPerson) {
-            counts[`p${axis.at(-1).toLowerCase()}`]--;
-            if (el.src.includes("sp")) counts[`sp${axis.at(-1).toLowerCase()}`]--;
+            agent.counts[`p${axis.at(-1).toLowerCase()}`]--;
+            if (el.src.includes("sp")) agent.counts[`sp${axis.at(-1).toLowerCase()}`]--;
           } else {
-            counts[`n${axis.at(-1).toLowerCase()}`]--;
-            if (el.src.includes("sc")) counts[`sc${axis.at(-1).toLowerCase()}`]--;
+            agent.counts[`n${axis.at(-1).toLowerCase()}`]--;
+            if (el.src.includes("sc")) agent.counts[`sc${axis.at(-1).toLowerCase()}`]--;
           }
         }
       }
     });
     if (!isPerson) {
       const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
-    //   counts[distProp] = 1 - minDistance; // normalizamos distancia
+    //   agent.counts[distProp] = 1 - minDistance; // normalizamos distancia
     }
   };
 
   ["Y", "-Y", "X", "-X"].forEach(axis => {
-    updateAxis(axis, "car", false);
-    updateAxis(axis, "person", true);
+    updateAxis(axis, "car");
+    updateAxis(axis, "person");
   });
   // Asignar al estado principal
-  agent.state.ny = normalizeNumberCars(counts.ny);
-  agent.state.nx = normalizeNumberCars(counts.nx);
-  agent.state.py = normalizeNumberCars(counts.py);
-  agent.state.px = normalizeNumberCars(counts.px);
-  agent.state.spy = counts.spy > 0 ? 1 : 0;
-  agent.state.spx = counts.spx > 0 ? 1 : 0;
-  agent.state.scy = counts.scy > 0 ? 1 : 0;
-  agent.state.scx = counts.scx > 0 ? 1 : 0;
-  agent.state.dy = counts.dy;
-  agent.state.dx = counts.dx;
+  agent.state.ny = normalizeNumberCars(agent.counts.ny);
+  agent.state.nx = normalizeNumberCars(agent.counts.nx);
+  agent.state.py = normalizeNumberCars(agent.counts.py);
+  agent.state.px = normalizeNumberCars(agent.counts.px);
+  agent.state.spy = agent.counts.spy > 0 ? 1 : 0;
+  agent.state.spx = agent.counts.spx > 0 ? 1 : 0;
+  agent.state.scy = agent.counts.scy > 0 ? 1 : 0;
+  agent.state.scx = agent.counts.scx > 0 ? 1 : 0;
+  agent.state.dy = agent.counts.dy;
+  agent.state.dx = agent.counts.dx;
 }
 
 setInterval(() => {
