@@ -41,12 +41,12 @@ const CONFIG =  {
     "car" : {
         "special" : {
             "label" : "sc",
-            "weight" : 0.05,
+            "weight" : 0.01,
             "lenImg" : 3,
         },
         "normal" : {
             "label" : "car",
-            "weight" : 0.95,
+            "weight" : 0.99,
             "lenImg" : 5,
         },
         "intervals" : {

@@ -2,6 +2,8 @@ class Generator {
 
     static timeOutIdXp = 0; static timeOutIdXn = 0;
     static timeOutIdYp = 0; static timeOutIdYn = 0;
+
+    static agent = new Agent();
     
     /**
      * @param {items : Array[string]} 
@@ -35,6 +37,7 @@ class Generator {
         element.classList.add("car"+axis+"-"+rail);
         element.src = "./img/"+img+".png";
         element.dataset.passed = "false";
+        element.dataset.counted = "false";
 
 
         function monitorPosition() {
@@ -62,6 +65,46 @@ class Generator {
             }
 
             element.style.animationPlayState = shouldPause ? "paused" : "running";
+
+            if (!isAmbar) {
+                Generator.agent.updateTrafficStateFromDOM();
+
+                const { nx, ny, al, tw, py, px, spy, spx, scy, scx, dy, dx } = Generator.agent.state;
+                const stateString = `${ny}_${nx}_${al}_${normalizeTime(tw)}_${py}_${px}_${spy}_${spx}_${scy}_${scx}_${dy}_${dx}`;
+                const lastBetterAction = betterAction;
+                betterAction = Generator.agent.getBetterAction(stateString);
+                // console.log(stateString + ": " + betterAction + " -> x:" + trafficEnabledX + " y:" + trafficEnabledY)
+                if (betterAction && lastBetterAction !== betterAction) {
+                    if (betterAction === "green_X") {
+                        if (!isAmbar) {
+                            trafficEnabledX = false;
+                            trafficEnabledY = false;
+                            isAmbar = true;
+                            setTimeout(() => {
+                                trafficEnabledX = true;
+                                trafficEnabledY = false;
+                                Generator.agent.state.al = 0;
+                                Generator.agent.state.tw = 0;
+                                isAmbar = false;
+                            }, 1500);
+                        }
+                    } else {
+                        if (!isAmbar) {
+                            trafficEnabledX = false;
+                            trafficEnabledY = false;
+                            isAmbar = true;
+                            setTimeout(() => {
+                                trafficEnabledX = false;
+                                trafficEnabledY = true;
+                                Generator.agent.state.al = 1;
+                                Generator.agent.state.tw = 0;
+                                isAmbar = false;
+                            }, 1500);
+                        }
+                    }
+                }
+
+            }
 
             if (element.isConnected) requestAnimationFrame(monitorPosition);
         }
@@ -104,4 +147,6 @@ class Generator {
         }
         spawn();
     }
+
+    
 }

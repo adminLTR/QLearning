@@ -58,32 +58,35 @@ class Agent {
 
                 const isBeforeCross =  ratio < config.intervals.max
                 if (isBeforeCross) {
-                    if (isPerson) {
-                        agent.counts[`p${axis.at(-1).toLowerCase()}`]++; // pedestrians
-                        if (el.src.includes("sp")) { // special pedestrians
-                            agent.counts[`sp${axis.at(-1).toLowerCase()}`]++;
+                    if (el.dataset.counted === "false") {
+                        el.dataset.counted = "true"
+                        if (isPerson) {
+                            this.counts[`p${axis.at(-1).toLowerCase()}`]++; // pedestrians
+                            if (el.src.includes("sp")) { // special pedestrians
+                                this.counts[`sp${axis.at(-1).toLowerCase()}`]++;
+                            }
+                        } else {
+                            this.counts[`n${axis.at(-1).toLowerCase()}`]++; // cars
+                            if (el.src.includes("sc")) {
+                                this.counts[`sc${axis.at(-1).toLowerCase()}`]++
+                            };
                         }
-                    } else {
-                        agent.counts[`n${axis.at(-1).toLowerCase()}`]++; // cars
-                        if (el.src.includes("sc")) {
-                            agent.counts[`sc${axis.at(-1).toLowerCase()}`]++
-                        };
-                    }
-                    if (ratio < minDistance) {
-                        minDistance = ratio;
+                        if (ratio < minDistance) {
+                            minDistance = ratio;
+                        }
                     }
                 } else {
                     if (el.dataset.passed === "false") {
                         el.dataset.passed = "true";
                         if (isPerson) {
-                            agent.counts[`p${axis.at(-1).toLowerCase()}`]--;
+                            this.counts[`p${axis.at(-1).toLowerCase()}`]--;
                             if (el.src.includes("sp")) {
-                                agent.counts[`sp${axis.at(-1).toLowerCase()}`]--
+                                this.counts[`sp${axis.at(-1).toLowerCase()}`]--
                             };
                         } else {
-                            agent.counts[`n${axis.at(-1).toLowerCase()}`]--;
+                            this.counts[`n${axis.at(-1).toLowerCase()}`]--;
                             if (el.src.includes("sc")) {
-                                agent.counts[`sc${axis.at(-1).toLowerCase()}`]--
+                                this.counts[`sc${axis.at(-1).toLowerCase()}`]--
                             };
                         }
                     }
@@ -91,8 +94,8 @@ class Agent {
             });
             if (!isPerson) {
                 const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
-                agent.counts[distProp] = minDistance; // normalizamos distancia
-                // console.log(agent.counts[distProp])
+                this.counts[distProp] = minDistance; // normalizamos distancia
+                // console.log(this.counts[distProp])
             }
         };
 
@@ -101,15 +104,15 @@ class Agent {
             updateAxis(axis, "person");
         });
         // Asignar al estado principal
-        agent.state.ny = normalizeNumberCars(agent.counts.ny);
-        agent.state.nx = normalizeNumberCars(agent.counts.nx);
-        agent.state.py = normalizeNumberCars(agent.counts.py);
-        agent.state.px = normalizeNumberCars(agent.counts.px);
-        agent.state.spy = agent.counts.spy > 0 ? 1 : 0;
-        agent.state.spx = agent.counts.spx > 0 ? 1 : 0;
-        agent.state.scy = agent.counts.scy > 0 ? 1 : 0;
-        agent.state.scx = agent.counts.scx > 0 ? 1 : 0;
-        agent.state.dy = normalizeDistance(agent.counts.dy);
-        agent.state.dx = normalizeDistance(agent.counts.dx);
+        this.state.ny = normalizeNumberCars(this.counts.ny);
+        this.state.nx = normalizeNumberCars(this.counts.nx);
+        this.state.py = normalizeNumberCars(this.counts.py);
+        this.state.px = normalizeNumberCars(this.counts.px);
+        this.state.spy = this.counts.spy > 0 ? 1 : 0;
+        this.state.spx = this.counts.spx > 0 ? 1 : 0;
+        this.state.scy = this.counts.scy > 0 ? 1 : 0;
+        this.state.scx = this.counts.scx > 0 ? 1 : 0;
+        this.state.dy = normalizeDistance(this.counts.dy);
+        this.state.dx = normalizeDistance(this.counts.dx);
     }
 }
