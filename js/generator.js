@@ -67,45 +67,51 @@ class Generator {
             element.style.animationPlayState = shouldPause ? "paused" : "running";
 
             if (!isAmbar) {
-                Generator.agent.updateTrafficStateFromDOM();
+                // Generator.agent.updateTrafficStateFromDOM();
+                let minDistance = Infinity;
+                const isBeforeCross =  posRatio < config.intervals.max;
 
-                const { nx, ny, al, tw, py, px, spy, spx, scy, scx, dy, dx } = Generator.agent.state;
-                const stateString = `${ny}_${nx}_${al}_${normalizeTime(tw)}_${py}_${px}_${spy}_${spx}_${scy}_${scx}_${dy}_${dx}`;
-                const lastBetterAction = betterAction;
-                betterAction = Generator.agent.getBetterAction(stateString);
-                // console.log(stateString + ": " + betterAction + " -> x:" + trafficEnabledX + " y:" + trafficEnabledY)
-                if (betterAction && lastBetterAction !== betterAction) {
-                    if (betterAction === "green_X") {
-                        if (!isAmbar) {
-                            trafficEnabledX = false;
-                            trafficEnabledY = false;
-                            isAmbar = true;
-                            setTimeout(() => {
-                                trafficEnabledX = true;
-                                trafficEnabledY = false;
-                                Generator.agent.state.al = 0;
-                                Generator.agent.state.tw = 0;
-                                isAmbar = false;
-                            }, 1500);
+                if (isBeforeCross) {
+                    if (element.dataset.counted === "false") {
+                        element.dataset.counted = "true"
+                        if (isPerson) {
+                            Generator.agent.counts[`p${axis.at(-1).toLowerCase()}`]++; // pedestrians
+                            if (element.src.includes("sp")) { // special pedestrians
+                                Generator.agent.counts[`sp${axis.at(-1).toLowerCase()}`]++;
+                            }
+                        } else {
+                            Generator.agent.counts[`n${axis.at(-1).toLowerCase()}`]++; // cars
+                            if (element.src.includes("sc")) {
+                                Generator.agent.counts[`sc${axis.at(-1).toLowerCase()}`]++
+                            };
                         }
-                    } else {
-                        if (!isAmbar) {
-                            trafficEnabledX = false;
-                            trafficEnabledY = false;
-                            isAmbar = true;
-                            setTimeout(() => {
-                                trafficEnabledX = false;
-                                trafficEnabledY = true;
-                                Generator.agent.state.al = 1;
-                                Generator.agent.state.tw = 0;
-                                isAmbar = false;
-                            }, 1500);
+                    }
+                    if (posRatio < minDistance) {
+                        minDistance = posRatio;
+                    }
+                } else {
+                    if (element.dataset.passed === "false") {
+                        element.dataset.passed = "true";
+                        if (isPerson) {
+                            Generator.agent.counts[`p${axis.at(-1).toLowerCase()}`]--;
+                            if (element.src.includes("sp")) {
+                                Generator.agent.counts[`sp${axis.at(-1).toLowerCase()}`]--
+                            };
+                        } else {
+                            Generator.agent.counts[`n${axis.at(-1).toLowerCase()}`]--;
+                            if (element.src.includes("sc")) {
+                                Generator.agent.counts[`sc${axis.at(-1).toLowerCase()}`]--
+                            };
                         }
                     }
                 }
-
+                
+                if (!isPerson) {
+                    const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
+                    Generator.agent.counts[distProp] = minDistance; // normalizamos distancia
+                    // console.log(Generator.agent.counts[distProp])
+                }
             }
-
             if (element.isConnected) requestAnimationFrame(monitorPosition);
         }
 

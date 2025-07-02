@@ -41,69 +41,7 @@ class Agent {
         return betterAction;
     }
 
-    updateTrafficStateFromDOM() {
-  
-        const updateAxis = (axis, type) => {
-            const isPerson = type === "person";
-            const className = isPerson ? `.person${axis}` : `.carro${axis}`;
-            const elements = document.querySelectorAll(className);
-            const {side, client} = TRANSLATOR[axis];
-            const config = isPerson ? CONFIG.person : CONFIG.car
-
-            let minDistance = Infinity;
-                elements.forEach(el => {
-                const parentSize = el.parentElement[client];
-                const pos = parseFloat(getComputedStyle(el)[side]);
-                const ratio = pos / parentSize;
-
-                const isBeforeCross =  ratio < config.intervals.max
-                if (isBeforeCross) {
-                    if (el.dataset.counted === "false") {
-                        el.dataset.counted = "true"
-                        if (isPerson) {
-                            this.counts[`p${axis.at(-1).toLowerCase()}`]++; // pedestrians
-                            if (el.src.includes("sp")) { // special pedestrians
-                                this.counts[`sp${axis.at(-1).toLowerCase()}`]++;
-                            }
-                        } else {
-                            this.counts[`n${axis.at(-1).toLowerCase()}`]++; // cars
-                            if (el.src.includes("sc")) {
-                                this.counts[`sc${axis.at(-1).toLowerCase()}`]++
-                            };
-                        }
-                        if (ratio < minDistance) {
-                            minDistance = ratio;
-                        }
-                    }
-                } else {
-                    if (el.dataset.passed === "false") {
-                        el.dataset.passed = "true";
-                        if (isPerson) {
-                            this.counts[`p${axis.at(-1).toLowerCase()}`]--;
-                            if (el.src.includes("sp")) {
-                                this.counts[`sp${axis.at(-1).toLowerCase()}`]--
-                            };
-                        } else {
-                            this.counts[`n${axis.at(-1).toLowerCase()}`]--;
-                            if (el.src.includes("sc")) {
-                                this.counts[`sc${axis.at(-1).toLowerCase()}`]--
-                            };
-                        }
-                    }
-                }
-            });
-            if (!isPerson) {
-                const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
-                this.counts[distProp] = minDistance; // normalizamos distancia
-                // console.log(this.counts[distProp])
-            }
-        };
-
-        ["Y", "-Y", "X", "-X"].forEach(axis => {
-            updateAxis(axis, "car");
-            updateAxis(axis, "person");
-        });
-        // Asignar al estado principal
+    normalizeData() {
         this.state.ny = normalizeNumberCars(this.counts.ny);
         this.state.nx = normalizeNumberCars(this.counts.nx);
         this.state.py = normalizeNumberCars(this.counts.py);
@@ -115,4 +53,5 @@ class Agent {
         this.state.dy = normalizeDistance(this.counts.dy);
         this.state.dx = normalizeDistance(this.counts.dx);
     }
+
 }

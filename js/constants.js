@@ -41,12 +41,12 @@ const CONFIG =  {
     "car" : {
         "special" : {
             "label" : "sc",
-            "weight" : 0.01,
+            "weight" : 0.1,
             "lenImg" : 3,
         },
         "normal" : {
             "label" : "car",
-            "weight" : 0.99,
+            "weight" : 0.9,
             "lenImg" : 5,
         },
         "intervals" : {
@@ -66,3 +66,4 @@ let trafficEnabledX = true;
 let isAmbar = false; 
 
 let betterAction;
+let stateString;
