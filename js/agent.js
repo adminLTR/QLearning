@@ -54,4 +54,11 @@ class Agent {
         this.state.dx = normalizeDistance(this.counts.dx);
     }
 
+    viewData() {
+        document.getElementById("nx").textContent = this.counts.nx;
+        document.getElementById("ny").textContent = this.counts.ny;
+        document.getElementById("px").textContent = this.counts.px;
+        document.getElementById("py").textContent = this.counts.py;
+    }
+
 }

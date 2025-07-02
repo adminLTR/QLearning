@@ -1,0 +1,10 @@
+.state-container {
+    position: absolute;
+    background-color: black;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 16px;
+    color: white;
+}

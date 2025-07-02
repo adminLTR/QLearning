@@ -65,7 +65,7 @@ class Generator {
             }
 
             element.style.animationPlayState = shouldPause ? "paused" : "running";
-
+            // Generator.agent.viewData()
             if (!isAmbar) {
                 // Generator.agent.updateTrafficStateFromDOM();
                 let minDistance = Infinity;
