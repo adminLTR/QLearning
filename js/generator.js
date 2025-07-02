@@ -1,4 +1,7 @@
 class Generator {
+
+    static timeOutIdXp = 0; static timeOutIdXn = 0;
+    static timeOutIdYp = 0; static timeOutIdYn = 0;
     
     /**
      * @param {items : Array[string]} 
@@ -77,5 +80,28 @@ class Generator {
             element.remove();
         });
         requestAnimationFrame(monitorPosition);
+    }
+    static startTrafficFlow(axis, rail, people=false) {
+        function spawn() {
+            let randomDelay, timeoutId, randomType, randomTypeImg;
+            let config = people ? CONFIG.person : CONFIG.car;
+    
+            randomDelay = Math.random() * config.time.max + config.time.min;
+            timeoutId = setTimeout(spawn, randomDelay);
+
+            randomType = Generator.choice(
+            ["normal", "special"], 
+            [config.normal.weight, config.special.weight]
+            );
+            randomTypeImg = `${config[randomType].label}-${Math.floor(Math.random()*config[randomType].lenImg)+1}`            
+
+            Generator.generateElement(axis, randomTypeImg, config[randomType].label, rail);
+
+            if (axis === "Y") Generator.timeOutIdYp = timeoutId;
+            if (axis === "-Y") Generator.timeOutIdYn = timeoutId;
+            if (axis === "X") Generator.timeOutIdXp = timeoutId;
+            if (axis === "-X") Generator.timeOutIdXn = timeoutId;
+        }
+        spawn();
     }
 }

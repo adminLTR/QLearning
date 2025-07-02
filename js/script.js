@@ -3,36 +3,9 @@ let trafficEnabledX = true;
 
 let isAmbar = false; 
 
-let timeOutIdXp, timeOutIdXn;
-let timeOutIdYp, timeOutIdYn;
-
 let betterAction;
 
 const agent = new Agent();
-
-function startTrafficFlow(axis, rail, people=false) {
-    function spawn() {
-        let randomDelay, timeoutId, randomType, randomTypeImg;
-        let config = people ? CONFIG.person : CONFIG.car;
-  
-        randomDelay = Math.random() * config.time.max + config.time.min;
-        timeoutId = setTimeout(spawn, randomDelay);
-
-        randomType = Generator.choice(
-          ["normal", "special"], 
-          [config.normal.weight, config.special.weight]
-        );
-        randomTypeImg = `${config[randomType].label}-${Math.floor(Math.random()*config[randomType].lenImg)+1}`            
-
-        Generator.generateElement(axis, randomTypeImg, randomType, rail);
-
-        if (axis === "Y") timeOutIdYp = timeoutId;
-        if (axis === "-Y") timeOutIdYn = timeoutId;
-        if (axis === "X") timeOutIdXp = timeoutId;
-        if (axis === "-X") timeOutIdXn = timeoutId;
-    }
-    spawn();
-}
 
 
 function updateTrafficStateFromDOM() {
@@ -156,21 +129,21 @@ setInterval(() => {
   
 }, 500);
 
-startTrafficFlow("Y", 1);
-startTrafficFlow("Y", 2);
-startTrafficFlow("-Y", 1);
-startTrafficFlow("-Y", 2);
-startTrafficFlow("X", 1);
-startTrafficFlow("X", 2);
-startTrafficFlow("-X", 1);
-startTrafficFlow("-X", 2);
+Generator.startTrafficFlow("Y", 1);
+Generator.startTrafficFlow("Y", 2);
+Generator.startTrafficFlow("-Y", 1);
+Generator.startTrafficFlow("-Y", 2);
+Generator.startTrafficFlow("X", 1);
+Generator.startTrafficFlow("X", 2);
+Generator.startTrafficFlow("-X", 1);
+Generator.startTrafficFlow("-X", 2);
 
-// startTrafficFlow("Y", 1, true);
-// startTrafficFlow("Y", 2, true);
-// startTrafficFlow("-Y", 1, true);
-// startTrafficFlow("-Y", 2, true);
-// startTrafficFlow("X", 1, true);
-// startTrafficFlow("X", 2, true);
-// startTrafficFlow("-X", 1, true);
-// startTrafficFlow("-X", 2, true);
+Generator.startTrafficFlow("Y", 1, true);
+Generator.startTrafficFlow("Y", 2, true);
+Generator.startTrafficFlow("-Y", 1, true);
+Generator.startTrafficFlow("-Y", 2, true);
+Generator.startTrafficFlow("X", 1, true);
+Generator.startTrafficFlow("X", 2, true);
+Generator.startTrafficFlow("-X", 1, true);
+Generator.startTrafficFlow("-X", 2, true);
 
