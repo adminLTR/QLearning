@@ -15,5 +15,4 @@ function normalizeTime(t) {
   if (t < 10) { return 1; }
   if (t < 16) { return 2; }
   return 3;
-
 }
