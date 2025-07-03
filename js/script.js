@@ -1,8 +1,19 @@
 
 let isChanging = false;
 
+function updateCrossLight(verticalColor, horizontalColor) {
+  const vertical = document.getElementById('light-vertical');
+  const horizontal = document.getElementById('light-horizontal');
+
+  if (vertical) vertical.style.backgroundColor = verticalColor;
+  if (horizontal) horizontal.style.backgroundColor = horizontalColor;
+}
+
 setInterval(() => {
-  if (isAmbar || isChanging) return;
+  if (isAmbar || isChanging) {
+    updateCrossLight('orange', 'orange');
+    return;
+  }
 
   Generator.agent.normalizeData();
 
@@ -16,21 +27,32 @@ setInterval(() => {
     isChanging = true;
     trafficEnabledX = false;
     trafficEnabledY = false;
+    
+    updateCrossLight('orange', 'orange');
 
     setTimeout(() => {
       if (betterAction === "green_X") {
         trafficEnabledX = true;
         trafficEnabledY = false;
         Generator.agent.state.al = 0;
+        updateCrossLight('red', 'green');
       } else {
         trafficEnabledX = false;
         trafficEnabledY = true;
         Generator.agent.state.al = 1;
+        updateCrossLight('green', 'red');
       }
       Generator.agent.state.tw = 0;
       isAmbar = false;
       isChanging = false;
     }, 3000);
+  } else {
+    // Mantener luces si no hay cambio
+    if (trafficEnabledX && !trafficEnabledY) {
+      updateCrossLight('red', 'green');
+    } else if (!trafficEnabledX && trafficEnabledY) {
+      updateCrossLight('green', 'red');
+    }
   }
 
   // Aumenta tiempo si semáforo está en rojo

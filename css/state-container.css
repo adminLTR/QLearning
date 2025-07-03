@@ -1,4 +1,4 @@
-.state-container {
+/* .state-container {
     position: absolute;
     background-color: black;
     top: 0;
@@ -7,4 +7,82 @@
     margin: 1rem;
     border-radius: 16px;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.traffic-cross {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: #1e1e1e;
+  border: 2px solid #444;
+  border-radius: 12px;
+}
+
+.light-bar.vertical {
+  width: 20px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.light-bar.horizontal {
+  height: 20px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+} */
+
+.state-container {
+  position: absolute;
+  background-color: black;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 16px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+}
+
+/* Contenedor de la cruz */
+.traffic-cross {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: #1e1e1e;
+  border: 2px solid #444;
+  border-radius: 12px;
+}
+
+/* Estilo general de las barras */
+.light-bar {
+  position: absolute;
+  background-color: gray;
+  transition: background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Barra vertical */
+.light-bar.vertical {
+  width: 16px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Barra horizontal */
+.light-bar.horizontal {
+  height: 16px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
 }
