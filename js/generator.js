@@ -1,14 +1,25 @@
+/**
+ * Clase Generator
+ * 
+ * Esta clase se encarga de generar dinámicamente los elementos del entorno,
+ * como vehículos y peatones, y monitorear su movimiento dentro de la intersección.
+ * También controla el flujo de tráfico mediante la creación periódica de nuevos elementos.
+ */
 class Generator {
-
+    
+    /** Identificadores de timeout para cada dirección, utilizados para detener el flujo si es necesario. */
     static timeOutIdXp = 0; static timeOutIdXn = 0;
     static timeOutIdYp = 0; static timeOutIdYn = 0;
 
+    /** Instancia del agente responsable de la toma de decisiones. */
     static agent = new Agent();
     
     /**
-     * @param {items : Array[string]} 
-     * @param {weights : Array[Number]}
-     * @return A random choice 
+     * Selecciona aleatoriamente un ítem de una lista, considerando probabilidades asignadas.
+     * 
+     * @param {string[]} items - Lista de elementos a seleccionar.
+     * @param {number[]} weights - Lista de pesos correspondientes a cada elemento.
+     * @returns {string} - Elemento seleccionado aleatoriamente según los pesos.
      */
     static choice(items, weights) {
         const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -24,8 +35,12 @@ class Generator {
     }
 
     /**
-     * Generates a new car or pedestrian in street
-     * @param {string} axis Describes the axis we are pointing to: X, -X, Y, -Y
+     * Genera un nuevo elemento visual (vehículo o peatón) que se moverá por la intersección.
+     * 
+     * @param {string} axis - Eje de movimiento del elemento: "X", "-X", "Y" o "-Y".
+     * @param {string} img - Nombre del archivo de imagen a usar (sin extensión).
+     * @param {string} type - Tipo del elemento: "car", "sc", "person", o "sp".
+     * @param {number} rail - Identificador del carril por el que se moverá.
      */
     static generateElement(axis, img, type, rail) {
         const isPerson = [CONFIG.person.special.label, CONFIG.person.normal.label].includes(type)
@@ -39,7 +54,11 @@ class Generator {
         element.dataset.passed = "false";
         element.dataset.counted = "false";
 
-
+        /**
+         * Función interna que monitorea en cada frame la posición del elemento y
+         * toma decisiones como pausar la animación si el semáforo está en rojo,
+         * actualizar los conteos del agente, y eliminar el elemento al finalizar su recorrido.
+         */
         function monitorPosition() {
             if (!element.isConnected) return;
             const side = TRANSLATOR[axis].side;
@@ -71,6 +90,7 @@ class Generator {
                 let minDistance = Infinity;
                 const isBeforeCross =  posRatio < config.intervals.max;
 
+                
                 if (isBeforeCross) {
                     if (element.dataset.counted === "false") {
                         element.dataset.counted = "true"
@@ -105,6 +125,7 @@ class Generator {
                         }
                     }
                 }
+
                 
                 if (!isPerson) {
                     const distProp = axis.at(-1).toLowerCase() === "y" ? "dy" : "dx";
@@ -112,9 +133,11 @@ class Generator {
                     // console.log(Generator.agent.counts[distProp])
                 }
             }
+            
             if (element.isConnected) requestAnimationFrame(monitorPosition);
         }
 
+        
         if (isPerson) {
             element.classList.add("person"+axis+"-"+rail);
             element.classList.add("person"+axis);
@@ -125,11 +148,21 @@ class Generator {
             document.getElementById("container"+axis+"-"+rail).append(element);
         }
         
+        
         element.addEventListener("animationend", () => {
             element.remove();
         });
+        
         requestAnimationFrame(monitorPosition);
     }
+
+    /**
+     * Inicia el flujo de generación continua de vehículos o peatones sobre un carril específico.
+     * 
+     * @param {string} axis - Eje de dirección del flujo: "X", "-X", "Y" o "-Y".
+     * @param {number} rail - Identificador del carril.
+     * @param {boolean} [people=false] - Si es true, genera peatones; si es false, vehículos.
+     */
     static startTrafficFlow(axis, rail, people=false) {
         function spawn() {
             let randomDelay, timeoutId, randomType, randomTypeImg;
@@ -146,6 +179,7 @@ class Generator {
 
             Generator.generateElement(axis, randomTypeImg, config[randomType].label, rail);
 
+            // Guarda el ID del timeout para posible cancelación
             if (axis === "Y") Generator.timeOutIdYp = timeoutId;
             if (axis === "-Y") Generator.timeOutIdYn = timeoutId;
             if (axis === "X") Generator.timeOutIdXp = timeoutId;
