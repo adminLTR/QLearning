@@ -203,16 +203,79 @@ def simulate_next_state(state, action):
     return f"{ny}_{nx}_{al}_{tw}_{py}_{px}_{spy}_{spx}_{scy}_{scx}_{dy}_{dx}"
 
 def update_q(state, action, reward, next_state):
+    """
+    Actualiza el valor Q (Q-table) para un estado y acción específicos
+    utilizando la ecuación del Q-Learning.
+
+    Esta función implementa la regla de actualización de Q-Learning, la cual
+    permite al agente aprender a través de la interacción con el entorno. 
+    Se ajusta el valor de Q para reflejar una mejor estimación del valor esperado
+    de tomar una acción en un estado determinado y luego seguir la mejor política.
+
+    Si el `next_state` no existe en la Q-table, se inicializa con valores pequeños aleatorios.
+
+    Fórmula:
+        Q(s, a) ← Q(s, a) + α * [r + γ * max_a' Q(s', a') - Q(s, a)]
+
+    Donde:
+    - s  : estado actual
+    - a  : acción tomada
+    - r  : recompensa recibida
+    - s' : siguiente estado
+    - α  : tasa de aprendizaje (alpha)
+    - γ  : factor de descuento (gamma)
+
+    Args:
+        state (str): Estado actual antes de tomar la acción.
+        action (str): Acción ejecutada desde el estado actual.
+        reward (float): Recompensa obtenida al tomar la acción.
+        next_state (str): Estado resultante después de ejecutar la acción.
+    """
     if next_state not in Q:
         Q[next_state] = {a: random.uniform(-0.1, 0.1) for a in actions}
     max_q_next = max(Q[next_state].values())
     Q[state][action] += alpha * (reward + gamma * max_q_next - Q[state][action])
 
 def save_q_table(filename="qtable.json"):
+    """
+    Guarda la tabla Q (Q-table) actual en un archivo JSON.
+
+    Esta función persiste el diccionario `Q`, que representa la tabla 
+    de valores Q aprendidos por el agente durante el entrenamiento. 
+    El archivo generado puede ser reutilizado posteriormente para continuar 
+    el aprendizaje o ejecutar decisiones sin necesidad de reentrenar.
+
+    Args:
+        filename (str): Nombre del archivo donde se guardará la Q-table.
+                        Por defecto es 'qtable.json'.
+
+    Ejemplo:
+        save_q_table("mi_qtable.json")
+    """
     with open(filename, "w") as f:
         json.dump(Q, f, indent=2)
   
 def train(episodes=10000):
+    """
+    Entrena al agente mediante el algoritmo Q-Learning por un número determinado de episodios.
+
+    Durante cada episodio, se genera un estado aleatorio del entorno (intersección vial),
+    se selecciona una acción basada en una política ε-greedy, se calcula la recompensa,
+    se simula el siguiente estado, y se actualiza la Q-table con la información obtenida.
+
+    También se lleva un registro de todos los estados únicos visitados durante el entrenamiento
+    para evaluar la exploración del agente. Al finalizar, se guarda la Q-table en un archivo JSON.
+
+    Args:
+        episodes (int): Número de episodios de entrenamiento. Por defecto es 10,000.
+
+    Salida:
+        Imprime el tiempo total de entrenamiento y la cantidad de estados únicos visitados.
+        Guarda el archivo 'qtable.json' con la Q-table entrenada.
+
+    Ejemplo de uso:
+        train(50000)
+    """
     unique_states = set()
     start_time = time.time()
 

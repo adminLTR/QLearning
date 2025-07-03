@@ -1,5 +1,24 @@
 
+/**
+ * Clase Agent
+ * 
+ * Representa el agente inteligente encargado de tomar decisiones 
+ * sobre el cambio de luces en un sistema de semáforo inteligente.
+ * Utiliza una tabla Q (`QTABLE`) para decidir la mejor acción posible
+ * según el estado actual del entorno.
+ */
 class Agent {
+    /**
+     * Estado actual del entorno, usado como entrada del modelo Q-learning.
+     * Cada propiedad representa una característica relevante para la decisión:
+     * - nx, ny: Cantidad de autos en los ejes X y Y.
+     * - al: Luz actual activa (0 para eje X, 1 para eje Y).
+     * - tw: Tiempo acumulado de espera de los vehículos.
+     * - px, py: Cantidad de peatones esperando en X e Y.
+     * - spx, spy: Peatones especiales (por ejemplo, niños, ancianos) en X e Y.
+     * - scx, scy: Vehículos especiales (por ejemplo, ambulancias) en X e Y.
+     * - dx, dy: Distancia del vehículo más cercano al cruce en X e Y.
+     */
     state = {
         nx: 0, ny: 0,
         al: 0, tw: 0,
@@ -9,6 +28,11 @@ class Agent {
         dy: 0, dx: 0,
     }
 
+    /**
+     * Contadores crudos para los elementos presentes en la intersección.
+     * Estos valores se actualizan en tiempo real y luego son normalizados
+     * para alimentar el `state`.
+     */
     counts = {
         nx: 0, ny: 0,
         px: 0, py: 0,
@@ -18,9 +42,13 @@ class Agent {
     };
 
     /**
-     * Decides which is the best action according to highest value in QTable
-     * @param {string} stateString State string in format "{ny}_{nx}_{al}_{tw}_{py}_{px}_{epy}_{epx}_{eny}_{enx}_{dy}_{dx}"
-     * @returns Better action selected
+     * Obtiene la mejor acción (por ejemplo, encender luz verde en eje X o Y)
+     * basada en la tabla Q y el estado actual representado como cadena.
+     *
+     * @param {string} stateString - Estado actual serializado, con formato:
+     * `"ny_nx_al_tw_py_px_spy_spx_scy_scx_dy_dx"`.
+     * 
+     * @returns {string|null} Acción con mayor valor Q, o `null` si el estado no existe.
      */
     getBetterAction(stateString) {
         if (!(stateString in QTABLE)) {
@@ -41,6 +69,11 @@ class Agent {
         return betterAction;
     }
 
+    /**
+     * Normaliza los datos de conteo crudo (`counts`) y actualiza el estado (`state`).
+     * Esta función es clave para transformar el entorno en una representación discreta
+     * adecuada para el algoritmo Q-learning.
+     */
     normalizeData() {
         this.state.ny = normalizeNumberCars(this.counts.ny);
         this.state.nx = normalizeNumberCars(this.counts.nx);
@@ -54,6 +87,10 @@ class Agent {
         this.state.dx = normalizeDistance(this.counts.dx);
     }
 
+    /**
+     * Actualiza visualmente en el DOM los conteos actuales de autos y peatones
+     * en ambos ejes X e Y. Función útil para monitoreo o depuración del sistema.
+     */
     viewData() {
         document.getElementById("nx").textContent = this.counts.nx;
         document.getElementById("ny").textContent = this.counts.ny;
