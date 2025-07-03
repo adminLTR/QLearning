@@ -77,8 +77,8 @@ class Agent {
     normalizeData() {
         this.state.ny = normalizeNumberCars(this.counts.ny);
         this.state.nx = normalizeNumberCars(this.counts.nx);
-        this.state.py = normalizeNumberCars(this.counts.py);
-        this.state.px = normalizeNumberCars(this.counts.px);
+        this.state.py = normalizeNumberPedestrians(this.counts.py);
+        this.state.px = normalizeNumberPedestrians(this.counts.px);
         this.state.spy = this.counts.spy > 0 ? 1 : 0;
         this.state.spx = this.counts.spx > 0 ? 1 : 0;
         this.state.scy = this.counts.scy > 0 ? 1 : 0;

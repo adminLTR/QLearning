@@ -26,6 +26,13 @@ function normalizeNumberCars(n) {
     return 3;
 }
 
+function normalizeNumberPedestrians(n) {
+    if (n <= 0) { return 0; }
+    if (n < 14) { return 1; }
+    if (n < 20) { return 2; }
+    return 3;
+}
+
 /**
  * Normaliza la distancia de un vehículo al cruce peatonal en una escala discreta de 0 a 3.
  * 

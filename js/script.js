@@ -30,6 +30,9 @@ setInterval(() => {
     isChanging = true;
     trafficEnabledX = false;
     trafficEnabledY = false;
+
+    console.log(newStateString + " -> " +betterAction)
+    console.log(Generator.agent.counts)
     
     updateCrossLight('orange', 'orange');
 
