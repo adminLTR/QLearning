@@ -171,10 +171,16 @@ class Generator {
             randomDelay = Math.random() * config.time.max + config.time.min;
             timeoutId = setTimeout(spawn, randomDelay);
 
-            randomType = Generator.choice(
-            ["normal", "special"], 
-            [config.normal.weight, config.special.weight]
-            );
+            if (axis.includes(generateSpecial) && generateSpecial !== '') {
+                randomType = "special";
+                generateSpecial = ''
+            } else {
+                randomType = Generator.choice(
+                    ["normal", "special"], 
+                    [config.normal.weight, config.special.weight]
+                );
+            }
+
             randomTypeImg = `${config[randomType].label}-${Math.floor(Math.random()*config[randomType].lenImg)+1}`            
 
             Generator.generateElement(axis, randomTypeImg, config[randomType].label, rail);

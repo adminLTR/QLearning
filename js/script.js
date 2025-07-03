@@ -1,6 +1,9 @@
 
 let isChanging = false;
 
+document.getElementById("btn-Y").addEventListener("click", ()=>{generateSpecial = 'Y'})
+document.getElementById("btn-X").addEventListener("click", ()=>{generateSpecial = 'X'})
+
 function updateCrossLight(verticalColor, horizontalColor) {
   const vertical = document.getElementById('light-vertical');
   const horizontal = document.getElementById('light-horizontal');

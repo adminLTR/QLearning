@@ -41,7 +41,7 @@ const CONFIG =  {
     "car" : {
         "special" : {
             "label" : "sc",
-            "weight" : 0.01,
+            "weight" : 0.05,
             "lenImg" : 3,
         },
         "normal" : {
@@ -67,3 +67,5 @@ let isAmbar = false;
 
 let betterAction;
 let stateString;
+
+let generateSpecial = ''
