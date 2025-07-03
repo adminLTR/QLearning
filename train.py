@@ -231,6 +231,7 @@ def train(episodes=10000):
 
     save_q_table()
 
-# Ejecutar entrenamiento
-train(25000000)
+if __name__ == '__main__':
+    # Ejecutar entrenamiento
+    train(25000000)
 
